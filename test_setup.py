@@ -28,7 +28,7 @@ def test_data_access():
         print(f"  - {file.name}")
     
     # Try to find and read shapefile
-    shapefiles = list(data_dir.glob("*.shp"))
+    shapefiles = list(data_dir.glob("**/*.shp"))
     
     if not shapefiles:
         print("\n❌ No .shp files found")
