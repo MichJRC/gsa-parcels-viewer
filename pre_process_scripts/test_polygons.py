@@ -16,7 +16,7 @@ gdf = gdf.to_crs('EPSG:4326')
 
 # Take a small sample from the center
 print("Sampling 100 parcels...")
-sample = gdf.sample(n=100, random_state=42)
+sample = gdf.sample(n=5000, random_state=42)
 
 # Get center point
 center_lat = sample.geometry.centroid.y.mean()
