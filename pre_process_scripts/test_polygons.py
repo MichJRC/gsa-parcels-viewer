@@ -43,3 +43,112 @@ for idx, row in sample.iterrows():
 m.save('pre_process_scripts/parcel_viewer.html')
 print("Map saved to: parcel_viewer.html")
 print("Opening in browser...")
+
+############### checking the small parcels to see if there are legitimate or artefacts ##
+
+import geopandas as gpd
+import warnings
+warnings.filterwarnings('ignore')
+
+# Load shapefile
+gdf = gpd.read_file('downloaded_data/Appe_Azi_PCG_2021_FE/Appe_Azi_PCG_2021_FE.shp')
+
+# Calculate area for each parcel
+gdf['area_m2'] = gdf.geometry.area
+
+# Check for suspiciously small or thin parcels
+print("Area statistics:")
+print(gdf['area_m2'].describe())
+
+print("\nSmallest 10 parcels (m²):")
+print(gdf.nsmallest(10, 'area_m2')[['area_m2', 'DESC_COLT', 'COD_SUOLO']])
+
+# Check for very thin polygons (low area-to-perimeter ratio)
+gdf['perimeter_m'] = gdf.geometry.length
+gdf['shape_index'] = gdf['perimeter_m'] / (2 * (3.14159 * gdf['area_m2']) ** 0.5)
+
+print("\nMost elongated parcels (high shape index = thin/irregular):")
+print(gdf.nlargest(10, 'shape_index')[['area_m2', 'shape_index', 'DESC_COLT']])
+
+##### making some different shapes to visualise the difference between circonference and perimeter
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import numpy as np
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+def draw_shape_comparison(ax, shape_type):
+    if shape_type == 'circle':
+        # Circle with area = 100
+        radius = np.sqrt(100/np.pi)
+        circle = patches.Circle((5, 5), radius, fill=False, edgecolor='blue', linewidth=3)
+        ax.add_patch(circle)
+        area = 100
+        perimeter = 2 * np.pi * radius
+        
+    elif shape_type == 'square':
+        # Square with area = 100
+        side = 10
+        square = patches.Rectangle((0, 0), side, side, fill=False, edgecolor='green', linewidth=3)
+        ax.add_patch(square)
+        area = 100
+        perimeter = 4 * side
+        
+    elif shape_type == 'rectangle':
+        # Elongated rectangle with area = 100
+        width = 25
+        height = 4
+        rect = patches.Rectangle((0, 3), width, height, fill=False, edgecolor='orange', linewidth=3)
+        ax.add_patch(rect)
+        area = 100
+        perimeter = 2 * (width + height)
+        
+    elif shape_type == 'sliver':
+        # Very thin sliver with area = 1.5 (like your artifacts)
+        width = 30
+        height = 0.05
+        sliver = patches.Rectangle((0, 5), width, height, fill=False, edgecolor='red', linewidth=3)
+        ax.add_patch(sliver)
+        area = 1.5
+        perimeter = 2 * (width + height)
+    
+    # Calculate shape index
+    shape_index = perimeter / (2 * np.sqrt(np.pi * area))
+    
+    # Draw the equivalent circle (dotted)
+    equiv_radius = np.sqrt(area/np.pi)
+    equiv_circle = patches.Circle((15, 5) if shape_type != 'sliver' else (15, 5), 
+                                  equiv_radius, fill=False, 
+                                  edgecolor='gray', linewidth=2, linestyle='--', alpha=0.5)
+    ax.add_patch(equiv_circle)
+    
+    ax.set_xlim(-2, 32)
+    ax.set_ylim(-2, 12)
+    ax.set_aspect('equal')
+    ax.grid(True, alpha=0.3)
+    
+    title = f'{shape_type.upper()}\n'
+    title += f'Area = {area:.1f} m²\n'
+    title += f'Perimeter = {perimeter:.1f} m\n'
+    title += f'Shape Index = {shape_index:.2f}\n'
+    title += f'(Gray dotted = equivalent circle)'
+    ax.set_title(title, fontsize=11, fontweight='bold')
+
+draw_shape_comparison(axes[0,0], 'circle')
+draw_shape_comparison(axes[0,1], 'square')
+draw_shape_comparison(axes[1,0], 'rectangle')
+draw_shape_comparison(axes[1,1], 'sliver')
+
+plt.suptitle('Shape Index Comparison: How "stretched out" is the polygon?\n' +
+             'Lower index = more compact (circular)\n' +
+             'Higher index = more elongated/irregular', 
+             fontsize=14, fontweight='bold')
+plt.tight_layout()
+plt.savefig('pre_process_scripts/shape_index_visual.png', dpi=150, bbox_inches='tight')
+print("✅ Visualization saved to: shape_index_visual.png")
+print("\nKey insight:")
+print("- Circle (index ~1.0): Most compact shape possible")
+print("- Square (index ~1.13): Slightly less compact")
+print("- Rectangle (index ~2.3): Elongated but reasonable")
+print("- Sliver (index 200+): Degenerate geometry - likely an error")
