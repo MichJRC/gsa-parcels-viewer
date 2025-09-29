@@ -40,6 +40,6 @@ for idx, row in sample.iterrows():
     ).add_to(m)
 
 # Save map
-m.save('parcel_viewer.html')
+m.save('pre_process_scripts/parcel_viewer.html')
 print("Map saved to: parcel_viewer.html")
 print("Opening in browser...")
