@@ -241,8 +241,8 @@ def get_parcels():
 
 if __name__ == '__main__':
     # Path to your shapefile
-    SHAPEFILE = "downloaded_data/Appe_Azi_PCG_2021_FE/Appe_Azi_PCG_2021_FE.shp"
-    
+    SHAPEFILE = "downloaded_data/parcels_cleaned.gpkg"
+
     print("\nStarting Agricultural Parcels Viewer")
     print("=" * 50)
     
