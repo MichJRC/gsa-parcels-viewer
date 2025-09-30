@@ -152,3 +152,61 @@ print("- Circle (index ~1.0): Most compact shape possible")
 print("- Square (index ~1.13): Slightly less compact")
 print("- Rectangle (index ~2.3): Elongated but reasonable")
 print("- Sliver (index 200+): Degenerate geometry - likely an error")
+
+### check if id_appez and codice azienda are unique meaning that the real identifier is the combination of the twos##
+import geopandas as gpd
+gdf = gpd.read_file("downloaded_data/Appe_Azi_PCG_2021_FE/Appe_Azi_PCG_2021_FE.shp")
+
+# Check if ID_APPEZ is unique within each farm
+print("Checking ID_APPEZ uniqueness:")
+print(f"Total records: {len(gdf):,}")
+print(f"Unique ID_APPEZ: {gdf['ID_APPEZ'].nunique():,}")
+print(f"Unique COD_AZI (farms): {gdf['COD_AZI'].nunique():,}")
+
+# Check if ID_APPEZ is unique within each farm
+grouped = gdf.groupby('COD_AZI')['ID_APPEZ'].apply(lambda x: x.duplicated().sum())
+farms_with_dupes = (grouped > 0).sum()
+print(f"\nFarms with duplicate ID_APPEZ: {farms_with_dupes}")
+
+# there are no duplicates of ID_APPEZ within the farm
+
+# Lets see how many polygons per ID_APPEZ and farm_ID with the same type of crop we would dissolve to clean the dataset
+import geopandas as gpd
+
+gdf = gpd.read_file("downloaded_data/Appe_Azi_PCG_2021_FE/Appe_Azi_PCG_2021_FE.shp")
+
+print("=" * 70)
+print("ANALYZING POTENTIAL MERGES")
+print("=" * 70)
+
+# Count polygons per unique combination of COD_AZI + ID_APPEZ + COD_SUOLO
+counts = gdf.groupby(['COD_AZI', 'ID_APPEZ', 'COD_SUOLO']).size()
+
+print("\nPolygons per unique (Farm + Parcel + Soil) combination:")
+print(counts.describe())
+
+multi_poly_count = (counts > 1).sum()
+total_could_merge = (counts - 1).sum()
+
+print(f"\nCombinations with multiple polygons: {multi_poly_count:,}")
+print(f"Total polygons that could be merged: {total_could_merge:,}")
+print(f"Potential reduction: {(total_could_merge / len(gdf) * 100):.2f}%")
+
+# Show some examples
+if multi_poly_count > 0:
+    multi_poly = counts[counts > 1].head(10)
+    print("\nExamples of combinations with multiple polygons:")
+    print("(These will be merged during dissolve)")
+    for (cod_azi, id_appez, cod_suolo), count in multi_poly.items():
+        # Get the actual records to show more info
+        sample = gdf[(gdf['COD_AZI'] == cod_azi) & 
+                     (gdf['ID_APPEZ'] == id_appez) & 
+                     (gdf['COD_SUOLO'] == cod_suolo)].iloc[0]
+        print(f"\n  Farm: {cod_azi[:10]}... | Parcel: {id_appez} | Soil: {cod_suolo}")
+        print(f"  Crop: {sample['DESC_COLT']}")
+        print(f"  → {count} polygons will be merged into 1")
+else:
+    print("\nNo combinations found with multiple polygons!")
+    print("The dissolve operation will not reduce the polygon count.")
+
+print("\n" + "=" * 70)
