@@ -36,7 +36,7 @@ for crop, count in top_crops.items():
 # STEP 3: Load your Italian-English translation
 # ==============================================================================
 print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION ===")
-italian_english = pd.read_csv('data/ItalianCropNamemaincropCorrectedEnglishCropName.csv')
+italian_english = pd.read_csv('data/ItalianCropNamemaincrop-CorrectedEnglishCropName.csv')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
 # ==============================================================================
@@ -288,7 +288,7 @@ print("✓ Saved: GSA_to_HRL_mapping_complete.csv")
 # Save crops needing manual review
 needs_review = gsa_with_english[gsa_with_english['HRL_Code'].isna()].copy()
 if len(needs_review) > 0:
-    needs_review[output_columns].to_csv('GSA_codes_NEED_MANUAL_HRL.csv', index=False)
+    needs_review[output_columns].to_csv('pre_process_scripts/GSA_codes_NEED_MANUAL_HRL.csv', index=False)
     print(f"⚠ Saved: GSA_codes_NEED_MANUAL_HRL.csv ({len(needs_review)} codes to review)")
     print("\nTop unmapped crops:")
     for _, row in needs_review.head(10).iterrows():

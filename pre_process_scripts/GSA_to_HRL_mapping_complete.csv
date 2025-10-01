@@ -1,0 +1,190 @@
+COD_SUOLO,DESC_SUOLO,Corrected English Crop Name,HRL_Code,HRL_Name,Confidence,Matched_By
+001,GRANTURCO (MAIS),Maize (corn),1130,Maize,high,italian:mais
+666,SEMINATIVI,Arable crops,,,none,no_match
+004,SOIA,Soybean,1220,Dry pulses,high,english:bean
+156,USO NON AGRICOLO - ALTRO,Non-agricultural use - other,,,none,no_match
+002,GRANO (FRUMENTO) DURO,Durum wheat,1110,Wheat,high,italian:frumento
+780,USO NON AGRICOLO - TARE,Non-agricultural use - tare,,,none,no_match
+629,ORTI FAMILIARI,Family gardens,,,none,no_match
+789,MARGINI DEI CAMPI,Field margins,,,none,no_match
+157,USO NON AGRICOLO - FABBRICATI,,,,none,no_match
+788,SIEPI E FASCE ALBERATE,Hedges and tree strips,,,none,no_match
+240,BARBABIETOLA,,,,none,no_match
+651,COLTIVAZIONI ARBOREE SPECIALIZZATE,Specialized tree crops,,,none,no_match
+587,GRANO (FRUMENTO) TENERO,Soft wheat,1110,Wheat,high,italian:frumento
+386,MARGINI DEI CAMPI SEMINABILI,Field margins (arable),,,none,no_match
+786,FOSSATI E CANALI,Ditches and canals,,,none,no_match
+791,FASCE TAMPONE RIPARIALI,Riparian buffer strips,,,none,no_match
+562,ERBA MEDICA,Alfalfa,,,none,no_match
+650,BOSCO,Woodland,,,none,no_match
+770,USO NON AGRICOLO - AREE NON COLTIVABILI,,,,none,no_match
+214,SUPERFICI AGRICOLE RITIRATE DALLA PRODUZIONE,Agricultural land withdrawn from production,,,none,no_match
+685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,,,none,no_match
+410,VITE,Vine (grapevine),1430,Rapeseed,high,english:rape
+189,PERO,Pear,1220,Dry pulses,high,english:pea
+673,SUSINO,Plum,2310,Fruits,high,italian:susino
+831,ACTINIDIA (KIWI),Kiwi,2310,Fruits,high,italian:kiwi
+044,MELO,Apple,2310,Fruits,high,italian:melo
+500,ARBORICOLTURA,Arboriculture,,,none,no_match
+784,"MACERI, STAGNI E LAGHETTI",,,,none,no_match
+083,TOPINAMBUR,Jerusalem artichoke,1210,Fresh Vegetables,high,english:artichoke
+557,SERRE,,,,none,no_match
+131,ORTIVE A PIENO CAMPO,Open-field vegetables,1210,Fresh Vegetables,high,english:vegetable
+940,ZUCCA,Pumpkin,,,none,no_match
+336,PRATO POLIFITA,Mixed grassland,,,none,no_match
+003,COLZA,Rapeseed,1430,Rapeseed,high,italian:colza
+801,PESCO,Peach,1220,Dry pulses,high,english:pea
+134,POMODORO,Tomato,1210,Fresh Vegetables,high,italian:pomodoro
+121,FAGIOLINO,Green bean,1220,Dry pulses,high,english:bean
+783,ALBERI IN FILARE,Trees in rows,,,none,no_match
+693,SORGO,Sorghum,1150,Other cereals,high,italian:sorgo
+785,GRUPPI DI ALBERI E BOSCHETTI,Groups of trees and groves,,,none,no_match
+127,LATTUGA LATTUGHINO,Lettuce,1210,Fresh Vegetables,high,italian:lattuga
+357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),,,,none,no_match
+924,COCOMERO,Watermelon,1210,Fresh Vegetables,high,italian:cocomero
+870,ORZO,Barley,1120,Barley,high,italian:orzo
+027,CAROTA,Carrot,1210,Fresh Vegetables,high,italian:carota
+671,ALBICOCCO,Apricot,2310,Fruits,high,italian:albicocco
+804,PESCO NETTARINA,Nectarine,2310,Fruits,high,italian:pesco
+902,ASPARAGO,Asparagus,1210,Fresh Vegetables,high,italian:asparago
+046,LOIETTO LOGLIO,Ryegrass,1150,Other cereals,high,english:rye
+065,PASCOLO POLIFITA,Mixed pasture,,,none,no_match
+710,PATATA,Potato,1310,Potatoes,high,italian:patata
+020,PISELLO,Pea,1220,Dry pulses,high,italian:pisello
+793,ALBERI ISOLATI,Isolated trees,,,none,no_match
+660,MANUFATTI,Manufactured goods,,,none,no_match
+103,PASCOLO ARBORATO - CESPUGLIATO TARA 20%,Wooded pasture (20% tare),,,none,no_match
+130,MELONE,Melon,1210,Fresh Vegetables,high,italian:melone
+722,MISCUGLIO DI AZOTOFISSATRICI,Nitrogen-fixing crop mix,,,none,no_match
+122,FAGIOLO,Bean,1220,Dry pulses,high,italian:fagiolo
+630,ARACHIDE,Peanut,1220,Dry pulses,high,english:pea
+054,PASCOLO ARBORATO - TARA 50%,Wooded pasture (50% tare),,,none,no_match
+009,FARRO,Emmer,1150,Other cereals,high,italian:farro
+544,CECE,Chickpea,1220,Dry pulses,high,italian:cece
+016,LENTICCHIE,Lentil,1220,Dry pulses,high,english:lentil
+656,POMODORINO,Cherry tomato,1210,Fresh Vegetables,high,english:tomato
+936,RAVANELLO,Radish,,,none,no_match
+672,CILIEGIO,Cherry,2310,Fruits,high,italian:ciliegio
+028,CAVOLO,Cabbage,1210,Fresh Vegetables,high,italian:cavolo
+019,RISONE,Rice,1140,Rice,high,italian:riso
+069,PIOPPO,Poplar,,,none,no_match
+495,NOCE,Walnut,2320,Nuts,high,italian:noce
+927,FRAGOLA,Strawberry,1210,Fresh Vegetables,high,italian:fragola
+113,AGLIO,Garlic,1210,Fresh Vegetables,high,italian:aglio
+800,ERBAIO,Green fodder,,,none,no_match
+188,PAULOWNIA TOMENTOSA,Empress tree (Paulownia),,,none,no_match
+420,OLIVO,Olive,2200,Olives,high,italian:olivo
+005,GIRASOLE,Sunflower,1410,Sunflower,high,italian:girasole
+152,TRIFOGLIO,Clover,,,none,no_match
+921,CIPOLLA ANCHE DI TIPO LUNGO (echalion),,1210,Fresh Vegetables,high,italian:cipolla
+332,FACELIA,Phacelia,,,none,no_match
+966,SALVIA,Sage,,,none,no_match
+392,ORTICA,Nettle,,,none,no_match
+394,PASSIFLORA,Passionflower,,,none,no_match
+933,PREZZEMOLO,Parsley,,,none,no_match
+445,LAVANDA,Lavender,,,none,no_match
+951,TIMO,Thyme,,,none,no_match
+457,ECHINACEA PALLIDA,Echinacea pallida,,,none,no_match
+556,VIVAI - ALTRI,Other nurseries,,,none,no_match
+964,MAGGIORANA,Marjoram,,,none,no_match
+926,FINOCCHIO,Fennel,1210,Fresh Vegetables,high,italian:finocchio
+668,EUCALIPTO,Eucalyptus,,,none,no_match
+322,LIPPIA CITRIODORA O CEDRINA O LIMONCINA (ALOYSIA CITRODORA),Lemon verbena,2310,Fruits,high,english:lemon
+963,ORIGANO,Oregano,,,none,no_match
+473,LAMPONE,Raspberry,2310,Fruits,high,italian:lampone
+965,ROSMARINO,Rosemary,,,none,no_match
+348,MALVA,Mallow,,,none,no_match
+961,MELISSA,Lemon balm,2310,Fruits,high,english:lemon
+903,BASILICO,Basil,,,none,no_match
+471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,,,none,no_match
+552,VIVAI FRUTTICOLI,,,,none,no_match
+952,ZAFFERANO,Saffron,,,none,no_match
+077,SENAPE,Mustard,,,none,no_match
+792,FASCE TAMPONE NON RIPARIALI,Non-riparian buffer strips,,,none,no_match
+734,FIORI EDULI,Edible flowers,,,none,no_match
+899,PRATO PASCOLO,Pasture meadow,,,none,no_match
+939,SPINACIO,Spinach,1210,Fresh Vegetables,high,italian:spinaci
+533,AVENA,Oats,1150,Other cereals,high,italian:avena
+024,"BIETOLA (Compresa  la CHELTENHAM BEET, BARBABIETOLA ROSSA/BIETOLA DA COSTA)",,,,none,no_match
+436,SENAPE BRUNA,Brown mustard,,,none,no_match
+494,NOCCIOLO,Hazelnut,2320,Nuts,high,italian:nocciolo
+279,MENTA DOLCE,Spearmint,1220,Dry pulses,high,english:pea
+408,MELOGRANO,Pomegranate,1110,Wheat,high,italian:grano
+842,RICINO,Castor bean,1220,Dry pulses,high,english:bean
+935,RADICCHIO,Radicchio,,,none,no_match
+575,"FAVE, FAVINO E FAVETTE",,,,none,no_match
+941,ZUCCHINO,Zucchini (courgette),1210,Fresh Vegetables,high,english:zucchini
+950,PRUGNE,Plums,2310,Fruits,high,english:plum
+503,VIVAI ORTICOLI,Vegetable nurseries,1210,Fresh Vegetables,high,english:vegetable
+684,SEGALA,Rye,1150,Other cereals,high,english:rye
+679,FRUTTETI FAMILIARI,Family orchards,2310,Fruits,high,english:orchard
+541,MIZUNA O BRASSICA RAPA,Mizuna,,,none,no_match
+919,CICORIA,Chicory,,,none,no_match
+501,TARTUFO,Truffle,,,none,no_match
+551,VIVAI FLORICOLI,,,,none,no_match
+932,PEPERONE,Bell pepper,1210,Fresh Vegetables,high,italian:peperone
+129,MELANZANA,Eggplant (aubergine),1210,Fresh Vegetables,high,italian:melanzana
+468,"CILIEGIO ACIDO (MARASCA,VISCIOLA,AMARENA)",,2310,Fruits,high,italian:ciliegio
+303,FAGGIO,,,,none,no_match
+056,CANAPA,Hemp,1440,"Flax, cotton and hemp",high,italian:canapa
+917,CETRIOLO,Cucumber,,,none,no_match
+507,PIANTE AROMATICHE E MEDICINALI E SPEZIE,Aromatic and medicinal plants and spices,,,none,no_match
+646,PIANTE ORNAMENTALI,Ornamental plants,,,none,no_match
+112,CANNA CINESE (MISCANTHUS SINENSIS),Chinese silver grass (Miscanthus sinensis),,,none,no_match
+429,RAFANO,Horseradish,,,none,no_match
+484,CRESCIONE DEI GIARDINI O CRESCIONE INGLESE,Garden cress,,,none,no_match
+093,TRITICALE,Triticale,,,none,no_match
+118,CAVOLFIORE,Cauliflower,,,none,no_match
+909,CARCIOFO,Artichoke,1210,Fresh Vegetables,high,italian:carciofo
+167,RUCOLA,Rocket (arugula),,,none,no_match
+226,CORIANDOLO,Coriander,,,none,no_match
+954,CAVOLO RAPA,Kohlrabi,1210,Fresh Vegetables,high,italian:cavolo
+135,PORRO,Leek,,,none,no_match
+324,CAMOMILLA,Chamomile,,,none,no_match
+422,BAMBU,Bamboo,,,none,no_match
+661,COTOGNO,Quince,,,none,no_match
+476,NESPOLO,Medlar,,,none,no_match
+840,SULLA,Sulla (Hedysarum coronarium),,,none,no_match
+655,ARBORETO CONSOCIABILE (CON COLTIVAZIONI ERBACEE),Mixed arboretum (with herbaceous crops),,,none,no_match
+662,COTONE,Cotton,1440,"Flax, cotton and hemp",high,italian:cotone
+053,PANICO,Foxtail millet,1150,Other cereals,high,english:millet
+219,CIPOLLETTA  CIPOLLA D'INVERNO O BUNCHING ONION,,1210,Fresh Vegetables,high,italian:cipolla
+490,FRUTTA A GUSCIO,Nuts,,,none,no_match
+680,SCALOGNO,Shallot,,,none,no_match
+475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,,,none,no_match
+384,TRIFOGLIO  (SP. TRIFOLIUM PRATENSE L.),,,,none,no_match
+970,CAVOLO BROCCOLO,Broccoli,1210,Fresh Vegetables,high,italian:cavolo
+962,MENTA,Mint,,,none,no_match
+488,ECHINACEA PURPUREA,Echinacea purpurea,,,none,no_match
+328,ELICRISO,Helichrysum,1140,Rice,high,italian:riso
+438,SENAPE NERA,Black mustard,,,none,no_match
+424,BAMBU GIGANTE,Giant bamboo,,,none,no_match
+492,CASTAGNO,Chestnut,2320,Nuts,high,italian:castagno
+080,CRISANTEMO,Chrysanthemum,,,none,no_match
+474,MORE,Blackberry,,,none,no_match
+545,CHENOPODIUM QUINOA,Quinoa,,,none,no_match
+787,MURETTI TRADIZIONALI,Traditional dry stone walls,,,none,no_match
+228,GIUGGIOLO,Jujube,,,none,no_match
+480,RIBES BIANCO,,2310,Fruits,high,italian:ribes
+383,TRIFOGLIO (SP. TRIFOLIUM INCARNATUM L.),Crimson clover (Trifolium incarnatum),,,none,no_match
+388,TRIFOGLIO (SP. TRIFOLIUM RESUPINATUM L.),Persian clover (Trifolium resupinatum),,,none,no_match
+359,FESTUCA  (SP. FESTUCA ARUNDINACEA SCHREB.),,,,none,no_match
+089,PATATA AMERICANA (BATATA),Sweet potato,1310,Potatoes,high,italian:patata
+555,VIVAI FORESTALI,,,,none,no_match
+145,SEDANO,Celery,1210,Fresh Vegetables,high,italian:sedano
+477,RIBES NERO,Blackcurrant,2310,Fruits,high,italian:ribes
+120,POINSETTIA (STELLA DI NATALE),Poinsettia,,,none,no_match
+535,GERANIO,Geranium,,,none,no_match
+790,TERRAZZAMENTI,Terraces,,,none,no_match
+597,GRANO SARACENO,Buckwheat,1110,Wheat,high,italian:grano
+316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,,,none,no_match
+306,BORRAGINE,Borage,,,none,no_match
+292,ARONIA NERA,Black chokeberry (Aronia),,,none,no_match
+667,SALICE,Willow,,,none,no_match
+280,MENTA PIPERITA,Peppermint,1210,Fresh Vegetables,high,english:pepper
+472,FICO,Fig,2310,Fruits,high,italian:fico
+619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,,,none,no_match
+076,LUPPOLO,Hop,,,none,no_match
+493,MANDORLO,Almond,2320,Nuts,high,italian:mandorlo
+043,RUSCUS,Butcher’s broom (Ruscus),,,none,no_match
+031,PEONIA,Peony,,,none,no_match
