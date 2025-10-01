@@ -38,7 +38,7 @@ for crop, count in top_crops.items():
 # STEP 3: Load and normalize Italian-English translation
 # ==============================================================================
 print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION (WITH NORMALIZATION) ===")
-italian_english = pd.read_csv('data/ITCrops_translated.csv')
+italian_english = pd.read_csv('data/ITCrops_translated.csv', sep=';')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
 # Create normalized version for matching
