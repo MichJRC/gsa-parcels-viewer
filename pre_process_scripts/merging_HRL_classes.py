@@ -11,7 +11,7 @@ print("=" * 80)
 # STEP 1: Load your geopackage
 # ==============================================================================
 print("\n=== STEP 1: LOAD GEOPACKAGE ===")
-gpkg = gpd.read_file('parcels_cleaned.gpkg')
+gpkg = gpd.read_file('downloaded_data/parcels_cleaned.gpkg')
 
 print(f"✓ Total features: {len(gpkg):,}")
 print(f"✓ CRS: {gpkg.crs}")
@@ -38,7 +38,7 @@ for crop, count in top_crops.items():
 # STEP 3: Load and normalize Italian-English translation
 # ==============================================================================
 print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION (WITH NORMALIZATION) ===")
-italian_english = pd.read_csv('ItalianCropNamemaincropCorrectedEnglishCropName.csv')
+italian_english = pd.read_csv('data/ItalianCropNamemaincrop-CorrectedEnglishCropName.csv')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
 # Create normalized version for matching
@@ -47,10 +47,11 @@ italian_english['Italian_Normalized'] = italian_english['Italian Crop Name (main
 print(f"Original columns: {italian_english.columns.tolist()}")
 
 # ==============================================================================
-# STEP 4: Merge using NORMALIZED keys
+# STEP 4: Merge using NORMALIZED keys with PARTIAL MATCHING fallback
 # ==============================================================================
 print("\n=== STEP 4: MERGE USING NORMALIZED KEYS ===")
 
+# First: Try exact match
 gsa_with_english = gsa_unique.merge(
     italian_english,
     left_on='DESC_SUOLO_NORMALIZED',
@@ -58,11 +59,45 @@ gsa_with_english = gsa_unique.merge(
     how='left'
 )
 
-matched = gsa_with_english['Corrected English Crop Name'].notna().sum()
+matched_exact = gsa_with_english['Corrected English Crop Name'].notna().sum()
+print(f"✓ Exact matches: {matched_exact}")
+
+# Second: For unmatched, try partial matching (contains)
+print("Attempting partial matching for remaining crops...")
+
+def find_partial_match(gsa_name, translation_df):
+    """Find translation where GSA name is contained in translation or vice versa"""
+    gsa_norm = str(gsa_name).lower().strip()
+    
+    for _, trans_row in translation_df.iterrows():
+        trans_norm = str(trans_row['Italian_Normalized']).lower().strip()
+        
+        # Check if one contains the other (with minimum length to avoid false positives)
+        if len(gsa_norm) >= 4 and len(trans_norm) >= 4:
+            # GSA name contained in translation (e.g., "BARBABIETOLA" in "BARBABIETOLA - RAPA...")
+            if gsa_norm in trans_norm and gsa_norm != trans_norm:
+                return trans_row['Corrected English Crop Name']
+            # Translation contained in GSA name
+            if trans_norm in gsa_norm and gsa_norm != trans_norm:
+                return trans_row['Corrected English Crop Name']
+    
+    return None
+
+# Apply partial matching to unmatched rows
+unmatched_mask = gsa_with_english['Corrected English Crop Name'].isna()
+for idx in gsa_with_english[unmatched_mask].index:
+    gsa_name = gsa_with_english.at[idx, 'DESC_SUOLO_NORMALIZED']
+    partial_match = find_partial_match(gsa_name, italian_english)
+    if partial_match:
+        gsa_with_english.at[idx, 'Corrected English Crop Name'] = partial_match
+
+matched_total = gsa_with_english['Corrected English Crop Name'].notna().sum()
+matched_partial = matched_total - matched_exact
 unmatched = gsa_with_english['Corrected English Crop Name'].isna().sum()
 
-print(f"✓ Matched with English: {matched} ({matched/len(gsa_unique)*100:.1f}%)")
-print(f"⚠ Not matched: {unmatched} ({unmatched/len(gsa_unique)*100:.1f}%)")
+print(f"✓ Partial matches: {matched_partial}")
+print(f"✓ Total matched: {matched_total} ({matched_total/len(gsa_unique)*100:.1f}%)")
+print(f"⚠ Still unmatched: {unmatched} ({unmatched/len(gsa_unique)*100:.1f}%)")
 
 if unmatched > 0:
     print(f"\n⚠ Crops still without English translation (first 10):")
@@ -317,7 +352,7 @@ for hrl_code in target_hrls:
 print("\n=== STEP 9: SAVE RESULTS ===")
 
 # Save complete mapping
-results_df.to_csv('GSA_to_HRL_mapping_FINAL.csv', index=False)
+results_df.to_csv('pre_process_scripts/GSA_to_HRL_mapping_FINAL.csv', index=False)
 print("✓ Saved: GSA_to_HRL_mapping_FINAL.csv")
 
 # Save only agricultural crops (mapped + unmapped, excluding non-agricultural)
