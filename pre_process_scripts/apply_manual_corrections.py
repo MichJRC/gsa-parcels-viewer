@@ -15,6 +15,7 @@ manual_corrections = {
     # 3100 - Unclassified arable crop (forage, herbs, aromatic plants)
     'SEMINATIVI': 3100,
     'ERBA MEDICA': 3100,
+    'ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA\'))': 3100,  # Exact match with extra spaces
     'TRIFOGLIO': 3100,
     'FACELIA': 3100,
     'SALVIA': 3100,
@@ -63,7 +64,9 @@ manual_corrections = {
     # 3200 - Unclassified permanent crop (generic tree categories)
     'COLTIVAZIONI ARBOREE SPECIALIZZATE': 3200,
     'COLTIVAZIONI ARBOREE PROMISCUE': 3200,
+    'COLTIVAZIONI ARBOREE PROMISCUE (PIU\' SPECIE ARBOREE)': 3200,  # With parentheses
     'COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE': 3200,
+    'COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA': 3200,  # Full version
     'MISCUGLIO DI AZOTOFISSATRICI': 3200,
     'ARBORICOLTURA': 3200,
     'COLTIVAZIONI ARBOREE': 3200,
@@ -82,10 +85,13 @@ manual_corrections = {
     'COTOGNO': 2310,
     'NESPOLO': 2310,
     'MIRTILLI ROSSI': 2310,
+    'MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE "VACCINIUM"': 2310,  # Full version with quotes
     'MORE': 2310,
     'GIUGGIOLO': 2310,
     'LOTO (KAKI)': 2310,
+    'LOTO (KAKI) (COMPRESO IL CACO MELA)': 2310,  # Full version
     'OLIVELLO': 2310,
+    'OLIVELLO O OLIVELLO SPINOSO': 2310,  # Full version
     'ARONIA NERA': 2310,
     
     # 2320 - Nuts

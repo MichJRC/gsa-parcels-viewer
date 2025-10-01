@@ -19,7 +19,7 @@ COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Exc
 650,BOSCO,Woodland,,,none,no_match,False
 770,USO NON AGRICOLO - AREE NON COLTIVABILI,,,,excluded,non_agricultural,True
 214,SUPERFICI AGRICOLE RITIRATE DALLA PRODUZIONE,Agricultural land withdrawn from production,,,excluded,non_agricultural,True
-685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,,,none,no_match,False
+685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,3200.0,Unclassified permanent crop,manual,manual_correction,False
 410,VITE,Vine (grapevine),2100.0,Grapes,very_high,manual_override,False
 189,PERO,Pear,1220.0,Dry pulses,high,english:pea,False
 673,SUSINO,Plum,2310.0,Fruits,high,italian:susino,False
@@ -40,7 +40,7 @@ COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Exc
 693,SORGO,Sorghum,1150.0,Other cereals,high,italian:sorgo,False
 785,GRUPPI DI ALBERI E BOSCHETTI,Groups of trees and groves,,,none,no_match,False
 127,LATTUGA LATTUGHINO,Lettuce,1210.0,Fresh Vegetables,high,italian:lattuga,False
-357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),Alfalfa,,,none,no_match,False
+357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),Alfalfa,3100.0,Unclassified arable crop,manual,manual_correction,False
 924,COCOMERO,Watermelon,1210.0,Fresh Vegetables,high,italian:cocomero,False
 870,ORZO,Barley,1120.0,Barley,high,italian:orzo,False
 27,CAROTA,Carrot,1210.0,Fresh Vegetables,high,italian:carota,False
@@ -96,7 +96,7 @@ COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Exc
 348,MALVA,Mallow,3100.0,Unclassified arable crop,manual,manual_correction,False
 961,MELISSA,Lemon balm,2310.0,Fruits,high,english:lemon,False
 903,BASILICO,Basil,3100.0,Unclassified arable crop,manual,manual_correction,False
-471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,,,none,no_match,False
+471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,2310.0,Fruits,manual,manual_correction,False
 552,VIVAI FRUTTICOLI,Fruit nurseries (including berry plants),,,excluded,non_agricultural,True
 952,ZAFFERANO,Saffron,3100.0,Unclassified arable crop,manual,manual_correction,False
 77,SENAPE,Mustard,3100.0,Unclassified arable crop,manual,manual_correction,False
@@ -151,7 +151,7 @@ COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Exc
 219,CIPOLLETTA  CIPOLLA D'INVERNO O BUNCHING ONION,,1210.0,Fresh Vegetables,high,italian:cipolla,False
 490,FRUTTA A GUSCIO,Nuts,2320.0,Nuts,manual,manual_correction,False
 680,SCALOGNO,Shallot,1210.0,Fresh Vegetables,manual,manual_correction,False
-475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,,,none,no_match,False
+475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,2310.0,Fruits,manual,manual_correction,False
 384,TRIFOGLIO  (SP. TRIFOLIUM PRATENSE L.),Clover,,,none,no_match,False
 970,CAVOLO BROCCOLO,Broccoli,1210.0,Fresh Vegetables,high,italian:cavolo,False
 962,MENTA,Mint,3100.0,Unclassified arable crop,manual,manual_correction,False
@@ -177,13 +177,13 @@ COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Exc
 535,GERANIO,Geranium,3100.0,Unclassified arable crop,manual,manual_correction,False
 790,TERRAZZAMENTI,Terraces,,,none,no_match,False
 597,GRANO SARACENO,Buckwheat,1110.0,Wheat,high,italian:grano,False
-316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,,,none,no_match,False
+316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,2310.0,Fruits,manual,manual_correction,False
 306,BORRAGINE,Borage,3100.0,Unclassified arable crop,manual,manual_correction,False
 292,ARONIA NERA,Black chokeberry (Aronia),2310.0,Fruits,manual,manual_correction,False
 667,SALICE,Willow,3100.0,Unclassified arable crop,manual,manual_correction,False
 280,MENTA PIPERITA,Peppermint,1210.0,Fresh Vegetables,high,english:pepper,False
 472,FICO,Fig,2310.0,Fruits,high,italian:fico,False
-619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,,,none,no_match,False
+619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,3200.0,Unclassified permanent crop,manual,manual_correction,False
 76,LUPPOLO,Hop,3100.0,Unclassified arable crop,manual,manual_correction,False
 493,MANDORLO,Almond,2320.0,Nuts,high,italian:mandorlo,False
 43,RUSCUS,Butcher’s broom (Ruscus),3100.0,Unclassified arable crop,manual,manual_correction,False
