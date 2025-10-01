@@ -1,0 +1,169 @@
+COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Excluded
+1,GRANTURCO (MAIS),Maize (corn),1130.0,Maize,very_high,manual_override,False
+666,SEMINATIVI,Arable crops,3100.0,Unclassified arable crop,manual,manual_correction,False
+4,SOIA,Soybean,1420.0,Soybeans,very_high,manual_override,False
+2,GRANO (FRUMENTO) DURO,Durum wheat,1110.0,Wheat,very_high,manual_override,False
+240,BARBABIETOLA,Beetroot / Swiss chard,1320.0,Sugar Beet,very_high,manual_override,False
+651,COLTIVAZIONI ARBOREE SPECIALIZZATE,Specialized tree crops,3200.0,Unclassified permanent crop,manual,manual_correction,False
+587,GRANO (FRUMENTO) TENERO,Soft wheat,1110.0,Wheat,very_high,manual_override,False
+562,ERBA MEDICA,Alfalfa,3100.0,Unclassified arable crop,manual,manual_correction,False
+650,BOSCO,Woodland,,,none,no_match,False
+685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,,,none,no_match,False
+410,VITE,Vine (grapevine),2100.0,Grapes,very_high,manual_override,False
+189,PERO,Pear,1220.0,Dry pulses,high,english:pea,False
+673,SUSINO,Plum,2310.0,Fruits,high,italian:susino,False
+831,ACTINIDIA (KIWI),Kiwi,2310.0,Fruits,high,italian:kiwi,False
+44,MELO,Apple,2310.0,Fruits,high,italian:melo,False
+500,ARBORICOLTURA,Arboriculture,3200.0,Unclassified permanent crop,manual,manual_correction,False
+83,TOPINAMBUR,Jerusalem artichoke,1210.0,Fresh Vegetables,high,english:artichoke,False
+131,ORTIVE A PIENO CAMPO,Open-field vegetables,1210.0,Fresh Vegetables,high,english:vegetable,False
+940,ZUCCA,Pumpkin,1210.0,Fresh Vegetables,manual,manual_correction,False
+336,PRATO POLIFITA,Mixed grassland,,,none,no_match,False
+3,COLZA,Rapeseed,1430.0,Rapeseed,high,italian:colza,False
+801,PESCO,Peach,1220.0,Dry pulses,high,english:pea,False
+134,POMODORO,Tomato,1210.0,Fresh Vegetables,high,italian:pomodoro,False
+121,FAGIOLINO,Green bean,1220.0,Dry pulses,high,english:bean,False
+783,ALBERI IN FILARE,Trees in rows,,,none,no_match,False
+693,SORGO,Sorghum,1150.0,Other cereals,high,italian:sorgo,False
+785,GRUPPI DI ALBERI E BOSCHETTI,Groups of trees and groves,,,none,no_match,False
+127,LATTUGA LATTUGHINO,Lettuce,1210.0,Fresh Vegetables,high,italian:lattuga,False
+357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),Alfalfa,,,none,no_match,False
+924,COCOMERO,Watermelon,1210.0,Fresh Vegetables,high,italian:cocomero,False
+870,ORZO,Barley,1120.0,Barley,high,italian:orzo,False
+27,CAROTA,Carrot,1210.0,Fresh Vegetables,high,italian:carota,False
+671,ALBICOCCO,Apricot,2310.0,Fruits,high,italian:albicocco,False
+804,PESCO NETTARINA,Nectarine,2310.0,Fruits,high,italian:pesco,False
+902,ASPARAGO,Asparagus,1210.0,Fresh Vegetables,high,italian:asparago,False
+46,LOIETTO LOGLIO,Ryegrass,1150.0,Other cereals,high,english:rye,False
+65,PASCOLO POLIFITA,Mixed pasture,,,none,no_match,False
+710,PATATA,Potato,1310.0,Potatoes,high,italian:patata,False
+20,PISELLO,Pea,1220.0,Dry pulses,high,italian:pisello,False
+793,ALBERI ISOLATI,Isolated trees,,,none,no_match,False
+660,MANUFATTI,Manufactured goods,,,none,no_match,False
+130,MELONE,Melon,1210.0,Fresh Vegetables,high,italian:melone,False
+722,MISCUGLIO DI AZOTOFISSATRICI,Nitrogen-fixing crop mix,3200.0,Unclassified permanent crop,manual,manual_correction,False
+122,FAGIOLO,Bean,1220.0,Dry pulses,high,italian:fagiolo,False
+630,ARACHIDE,Peanut,1220.0,Dry pulses,high,english:pea,False
+9,FARRO,Emmer,1150.0,Other cereals,high,italian:farro,False
+544,CECE,Chickpea,1220.0,Dry pulses,high,italian:cece,False
+16,LENTICCHIE,Lentil,1220.0,Dry pulses,high,english:lentil,False
+656,POMODORINO,Cherry tomato,1210.0,Fresh Vegetables,high,english:tomato,False
+936,RAVANELLO,Radish,1210.0,Fresh Vegetables,manual,manual_correction,False
+672,CILIEGIO,Cherry,2310.0,Fruits,high,italian:ciliegio,False
+28,CAVOLO,Cabbage,1210.0,Fresh Vegetables,high,italian:cavolo,False
+19,RISONE,Rice,1140.0,Rice,high,italian:riso,False
+69,PIOPPO,Poplar,,,none,no_match,False
+495,NOCE,Walnut,2320.0,Nuts,high,italian:noce,False
+927,FRAGOLA,Strawberry,1210.0,Fresh Vegetables,high,italian:fragola,False
+113,AGLIO,Garlic,1210.0,Fresh Vegetables,high,italian:aglio,False
+800,ERBAIO,Green fodder,,,none,no_match,False
+188,PAULOWNIA TOMENTOSA,Empress tree (Paulownia),,,none,no_match,False
+420,OLIVO,Olive,2200.0,Olives,high,italian:olivo,False
+5,GIRASOLE,Sunflower,1410.0,Sunflower,high,italian:girasole,False
+152,TRIFOGLIO,Clover,3100.0,Unclassified arable crop,manual,manual_correction,False
+921,CIPOLLA ANCHE DI TIPO LUNGO (echalion),Onion (including shallot type),1210.0,Fresh Vegetables,high,italian:cipolla,False
+332,FACELIA,Phacelia,3100.0,Unclassified arable crop,manual,manual_correction,False
+966,SALVIA,Sage,3100.0,Unclassified arable crop,manual,manual_correction,False
+392,ORTICA,Nettle,3100.0,Unclassified arable crop,manual,manual_correction,False
+394,PASSIFLORA,Passionflower,3100.0,Unclassified arable crop,manual,manual_correction,False
+933,PREZZEMOLO,Parsley,3100.0,Unclassified arable crop,manual,manual_correction,False
+445,LAVANDA,Lavender,3100.0,Unclassified arable crop,manual,manual_correction,False
+951,TIMO,Thyme,3100.0,Unclassified arable crop,manual,manual_correction,False
+457,ECHINACEA PALLIDA,Echinacea pallida,3100.0,Unclassified arable crop,manual,manual_correction,False
+964,MAGGIORANA,Marjoram,3100.0,Unclassified arable crop,manual,manual_correction,False
+926,FINOCCHIO,Fennel,1210.0,Fresh Vegetables,high,italian:finocchio,False
+668,EUCALIPTO,Eucalyptus,3100.0,Unclassified arable crop,manual,manual_correction,False
+322,LIPPIA CITRIODORA O CEDRINA O LIMONCINA (ALOYSIA CITRODORA),Lemon verbena,2310.0,Fruits,high,english:lemon,False
+963,ORIGANO,Oregano,3100.0,Unclassified arable crop,manual,manual_correction,False
+473,LAMPONE,Raspberry,2310.0,Fruits,high,italian:lampone,False
+965,ROSMARINO,Rosemary,3100.0,Unclassified arable crop,manual,manual_correction,False
+348,MALVA,Mallow,3100.0,Unclassified arable crop,manual,manual_correction,False
+961,MELISSA,Lemon balm,2310.0,Fruits,high,english:lemon,False
+903,BASILICO,Basil,3100.0,Unclassified arable crop,manual,manual_correction,False
+471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,,,none,no_match,False
+952,ZAFFERANO,Saffron,3100.0,Unclassified arable crop,manual,manual_correction,False
+77,SENAPE,Mustard,3100.0,Unclassified arable crop,manual,manual_correction,False
+734,FIORI EDULI,Edible flowers,3100.0,Unclassified arable crop,manual,manual_correction,False
+899,PRATO PASCOLO,Pasture meadow,,,none,no_match,False
+939,SPINACIO,Spinach,1210.0,Fresh Vegetables,high,italian:spinaci,False
+533,AVENA,Oats,1150.0,Other cereals,high,italian:avena,False
+24,"BIETOLA (Compresa  la CHELTENHAM BEET, BARBABIETOLA ROSSA/BIETOLA DA COSTA)",,1210.0,Fresh Vegetables,high,italian:bietola,False
+436,SENAPE BRUNA,Brown mustard,1210.0,Fresh Vegetables,manual,manual_correction,False
+494,NOCCIOLO,Hazelnut,2320.0,Nuts,high,italian:nocciolo,False
+279,MENTA DOLCE,Spearmint,1220.0,Dry pulses,high,english:pea,False
+408,MELOGRANO,Pomegranate,1110.0,Wheat,high,italian:grano,False
+842,RICINO,Castor bean,1220.0,Dry pulses,high,english:bean,False
+935,RADICCHIO,Radicchio,1210.0,Fresh Vegetables,manual,manual_correction,False
+575,"FAVE, FAVINO E FAVETTE",,1220.0,Dry pulses,high,italian:favino,False
+941,ZUCCHINO,Zucchini (courgette),1210.0,Fresh Vegetables,high,english:zucchini,False
+950,PRUGNE,Plums,2310.0,Fruits,high,english:plum,False
+684,SEGALA,Rye,1150.0,Other cereals,high,english:rye,False
+679,FRUTTETI FAMILIARI,Family orchards,1210.0,Fresh Vegetables,high,english:chard,False
+541,MIZUNA O BRASSICA RAPA,Mizuna,3100.0,Unclassified arable crop,manual,manual_correction,False
+919,CICORIA,Chicory,3100.0,Unclassified arable crop,manual,manual_correction,False
+501,TARTUFO,Truffle,3100.0,Unclassified arable crop,manual,manual_correction,False
+932,PEPERONE,Bell pepper,1210.0,Fresh Vegetables,high,italian:peperone,False
+129,MELANZANA,Eggplant (aubergine),1210.0,Fresh Vegetables,high,italian:melanzana,False
+468,"CILIEGIO ACIDO (MARASCA,VISCIOLA,AMARENA)",Cherry,2310.0,Fruits,high,italian:ciliegio,False
+303,FAGGIO,,,,none,no_match,False
+56,CANAPA,Hemp,1440.0,"Flax, cotton and hemp",high,italian:canapa,False
+917,CETRIOLO,Cucumber,1210.0,Fresh Vegetables,manual,manual_correction,False
+507,PIANTE AROMATICHE E MEDICINALI E SPEZIE,Aromatic and medicinal plants and spices,3100.0,Unclassified arable crop,manual,manual_correction,False
+646,PIANTE ORNAMENTALI,Ornamental plants,3100.0,Unclassified arable crop,manual,manual_correction,False
+112,CANNA CINESE (MISCANTHUS SINENSIS),Chinese silver grass (Miscanthus sinensis),,,none,no_match,False
+429,RAFANO,Horseradish,3100.0,Unclassified arable crop,manual,manual_correction,False
+484,CRESCIONE DEI GIARDINI O CRESCIONE INGLESE,Garden cress,,,none,no_match,False
+93,TRITICALE,Triticale,1150.0,Other cereals,high,italian:triticale,False
+118,CAVOLFIORE,Cauliflower,1210.0,Fresh Vegetables,manual,manual_correction,False
+909,CARCIOFO,Artichoke,1210.0,Fresh Vegetables,high,italian:carciofo,False
+167,RUCOLA,Rocket (arugula),3100.0,Unclassified arable crop,manual,manual_correction,False
+226,CORIANDOLO,Coriander,3100.0,Unclassified arable crop,manual,manual_correction,False
+954,CAVOLO RAPA,Kohlrabi,1210.0,Fresh Vegetables,high,italian:cavolo,False
+135,PORRO,Leek,1210.0,Fresh Vegetables,manual,manual_correction,False
+324,CAMOMILLA,Chamomile,3100.0,Unclassified arable crop,manual,manual_correction,False
+422,BAMBU,Bamboo,3100.0,Unclassified arable crop,manual,manual_correction,False
+661,COTOGNO,Quince,2310.0,Fruits,manual,manual_correction,False
+476,NESPOLO,Medlar,2310.0,Fruits,manual,manual_correction,False
+840,SULLA,Sulla (Hedysarum coronarium),,,none,no_match,False
+655,ARBORETO CONSOCIABILE (CON COLTIVAZIONI ERBACEE),Mixed arboretum (with herbaceous crops),,,none,no_match,False
+662,COTONE,Cotton,1440.0,"Flax, cotton and hemp",high,italian:cotone,False
+53,PANICO,Foxtail millet,1150.0,Other cereals,high,english:millet,False
+219,CIPOLLETTA  CIPOLLA D'INVERNO O BUNCHING ONION,,1210.0,Fresh Vegetables,high,italian:cipolla,False
+490,FRUTTA A GUSCIO,Nuts,2320.0,Nuts,manual,manual_correction,False
+680,SCALOGNO,Shallot,1210.0,Fresh Vegetables,manual,manual_correction,False
+475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,,,none,no_match,False
+384,TRIFOGLIO  (SP. TRIFOLIUM PRATENSE L.),Clover,,,none,no_match,False
+970,CAVOLO BROCCOLO,Broccoli,1210.0,Fresh Vegetables,high,italian:cavolo,False
+962,MENTA,Mint,3100.0,Unclassified arable crop,manual,manual_correction,False
+488,ECHINACEA PURPUREA,Echinacea purpurea,3100.0,Unclassified arable crop,manual,manual_correction,False
+328,ELICRISO,Helichrysum,1140.0,Rice,high,italian:riso,False
+438,SENAPE NERA,Black mustard,3100.0,Unclassified arable crop,manual,manual_correction,False
+424,BAMBU GIGANTE,Giant bamboo,3100.0,Unclassified arable crop,manual,manual_correction,False
+492,CASTAGNO,Chestnut,2320.0,Nuts,high,italian:castagno,False
+80,CRISANTEMO,Chrysanthemum,3100.0,Unclassified arable crop,manual,manual_correction,False
+474,MORE,Blackberry,2310.0,Fruits,manual,manual_correction,False
+545,CHENOPODIUM QUINOA,Quinoa,3100.0,Unclassified arable crop,manual,manual_correction,False
+787,MURETTI TRADIZIONALI,Traditional dry stone walls,,,none,no_match,False
+228,GIUGGIOLO,Jujube,2310.0,Fruits,manual,manual_correction,False
+480,RIBES BIANCO,White currant (gooseberry),2310.0,Fruits,high,italian:ribes,False
+383,TRIFOGLIO (SP. TRIFOLIUM INCARNATUM L.),Crimson clover (Trifolium incarnatum),,,none,no_match,False
+388,TRIFOGLIO (SP. TRIFOLIUM RESUPINATUM L.),Persian clover (Trifolium resupinatum),,,none,no_match,False
+359,FESTUCA  (SP. FESTUCA ARUNDINACEA SCHREB.),,,,none,no_match,False
+89,PATATA AMERICANA (BATATA),Sweet potato,1310.0,Potatoes,high,italian:patata,False
+145,SEDANO,Celery,1210.0,Fresh Vegetables,high,italian:sedano,False
+477,RIBES NERO,Blackcurrant,2310.0,Fruits,high,italian:ribes,False
+120,POINSETTIA (STELLA DI NATALE),Poinsettia,,,none,no_match,False
+535,GERANIO,Geranium,3100.0,Unclassified arable crop,manual,manual_correction,False
+790,TERRAZZAMENTI,Terraces,,,none,no_match,False
+597,GRANO SARACENO,Buckwheat,1110.0,Wheat,high,italian:grano,False
+316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,,,none,no_match,False
+306,BORRAGINE,Borage,3100.0,Unclassified arable crop,manual,manual_correction,False
+292,ARONIA NERA,Black chokeberry (Aronia),2310.0,Fruits,manual,manual_correction,False
+667,SALICE,Willow,3100.0,Unclassified arable crop,manual,manual_correction,False
+280,MENTA PIPERITA,Peppermint,1210.0,Fresh Vegetables,high,english:pepper,False
+472,FICO,Fig,2310.0,Fruits,high,italian:fico,False
+619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,,,none,no_match,False
+76,LUPPOLO,Hop,3100.0,Unclassified arable crop,manual,manual_correction,False
+493,MANDORLO,Almond,2320.0,Nuts,high,italian:mandorlo,False
+43,RUSCUS,Butcher’s broom (Ruscus),3100.0,Unclassified arable crop,manual,manual_correction,False
+31,PEONIA,Peony,3100.0,Unclassified arable crop,manual,manual_correction,False

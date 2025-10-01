@@ -1,0 +1,89 @@
+COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Excluded
+666,SEMINATIVI,Arable crops,,,none,no_match,False
+651,COLTIVAZIONI ARBOREE SPECIALIZZATE,Specialized tree crops,,,none,no_match,False
+562,ERBA MEDICA,Alfalfa,,,none,no_match,False
+650,BOSCO,Woodland,,,none,no_match,False
+685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,,,none,no_match,False
+500,ARBORICOLTURA,Arboriculture,,,none,no_match,False
+940,ZUCCA,Pumpkin,,,none,no_match,False
+336,PRATO POLIFITA,Mixed grassland,,,none,no_match,False
+783,ALBERI IN FILARE,Trees in rows,,,none,no_match,False
+785,GRUPPI DI ALBERI E BOSCHETTI,Groups of trees and groves,,,none,no_match,False
+357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),Alfalfa,,,none,no_match,False
+065,PASCOLO POLIFITA,Mixed pasture,,,none,no_match,False
+793,ALBERI ISOLATI,Isolated trees,,,none,no_match,False
+660,MANUFATTI,Manufactured goods,,,none,no_match,False
+722,MISCUGLIO DI AZOTOFISSATRICI,Nitrogen-fixing crop mix,,,none,no_match,False
+936,RAVANELLO,Radish,,,none,no_match,False
+069,PIOPPO,Poplar,,,none,no_match,False
+800,ERBAIO,Green fodder,,,none,no_match,False
+188,PAULOWNIA TOMENTOSA,Empress tree (Paulownia),,,none,no_match,False
+152,TRIFOGLIO,Clover,,,none,no_match,False
+332,FACELIA,Phacelia,,,none,no_match,False
+966,SALVIA,Sage,,,none,no_match,False
+392,ORTICA,Nettle,,,none,no_match,False
+394,PASSIFLORA,Passionflower,,,none,no_match,False
+933,PREZZEMOLO,Parsley,,,none,no_match,False
+445,LAVANDA,Lavender,,,none,no_match,False
+951,TIMO,Thyme,,,none,no_match,False
+457,ECHINACEA PALLIDA,Echinacea pallida,,,none,no_match,False
+964,MAGGIORANA,Marjoram,,,none,no_match,False
+668,EUCALIPTO,Eucalyptus,,,none,no_match,False
+963,ORIGANO,Oregano,,,none,no_match,False
+965,ROSMARINO,Rosemary,,,none,no_match,False
+348,MALVA,Mallow,,,none,no_match,False
+903,BASILICO,Basil,,,none,no_match,False
+471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,,,none,no_match,False
+952,ZAFFERANO,Saffron,,,none,no_match,False
+077,SENAPE,Mustard,,,none,no_match,False
+734,FIORI EDULI,Edible flowers,,,none,no_match,False
+899,PRATO PASCOLO,Pasture meadow,,,none,no_match,False
+436,SENAPE BRUNA,Brown mustard,,,none,no_match,False
+935,RADICCHIO,Radicchio,,,none,no_match,False
+541,MIZUNA O BRASSICA RAPA,Mizuna,,,none,no_match,False
+919,CICORIA,Chicory,,,none,no_match,False
+501,TARTUFO,Truffle,,,none,no_match,False
+303,FAGGIO,,,,none,no_match,False
+917,CETRIOLO,Cucumber,,,none,no_match,False
+507,PIANTE AROMATICHE E MEDICINALI E SPEZIE,Aromatic and medicinal plants and spices,,,none,no_match,False
+646,PIANTE ORNAMENTALI,Ornamental plants,,,none,no_match,False
+112,CANNA CINESE (MISCANTHUS SINENSIS),Chinese silver grass (Miscanthus sinensis),,,none,no_match,False
+429,RAFANO,Horseradish,,,none,no_match,False
+484,CRESCIONE DEI GIARDINI O CRESCIONE INGLESE,Garden cress,,,none,no_match,False
+118,CAVOLFIORE,Cauliflower,,,none,no_match,False
+167,RUCOLA,Rocket (arugula),,,none,no_match,False
+226,CORIANDOLO,Coriander,,,none,no_match,False
+135,PORRO,Leek,,,none,no_match,False
+324,CAMOMILLA,Chamomile,,,none,no_match,False
+422,BAMBU,Bamboo,,,none,no_match,False
+661,COTOGNO,Quince,,,none,no_match,False
+476,NESPOLO,Medlar,,,none,no_match,False
+840,SULLA,Sulla (Hedysarum coronarium),,,none,no_match,False
+655,ARBORETO CONSOCIABILE (CON COLTIVAZIONI ERBACEE),Mixed arboretum (with herbaceous crops),,,none,no_match,False
+490,FRUTTA A GUSCIO,Nuts,,,none,no_match,False
+680,SCALOGNO,Shallot,,,none,no_match,False
+475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,,,none,no_match,False
+384,TRIFOGLIO  (SP. TRIFOLIUM PRATENSE L.),Clover,,,none,no_match,False
+962,MENTA,Mint,,,none,no_match,False
+488,ECHINACEA PURPUREA,Echinacea purpurea,,,none,no_match,False
+438,SENAPE NERA,Black mustard,,,none,no_match,False
+424,BAMBU GIGANTE,Giant bamboo,,,none,no_match,False
+080,CRISANTEMO,Chrysanthemum,,,none,no_match,False
+474,MORE,Blackberry,,,none,no_match,False
+545,CHENOPODIUM QUINOA,Quinoa,,,none,no_match,False
+787,MURETTI TRADIZIONALI,Traditional dry stone walls,,,none,no_match,False
+228,GIUGGIOLO,Jujube,,,none,no_match,False
+383,TRIFOGLIO (SP. TRIFOLIUM INCARNATUM L.),Crimson clover (Trifolium incarnatum),,,none,no_match,False
+388,TRIFOGLIO (SP. TRIFOLIUM RESUPINATUM L.),Persian clover (Trifolium resupinatum),,,none,no_match,False
+359,FESTUCA  (SP. FESTUCA ARUNDINACEA SCHREB.),,,,none,no_match,False
+120,POINSETTIA (STELLA DI NATALE),Poinsettia,,,none,no_match,False
+535,GERANIO,Geranium,,,none,no_match,False
+790,TERRAZZAMENTI,Terraces,,,none,no_match,False
+316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,,,none,no_match,False
+306,BORRAGINE,Borage,,,none,no_match,False
+292,ARONIA NERA,Black chokeberry (Aronia),,,none,no_match,False
+667,SALICE,Willow,,,none,no_match,False
+619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,,,none,no_match,False
+076,LUPPOLO,Hop,,,none,no_match,False
+043,RUSCUS,Butcher’s broom (Ruscus),,,none,no_match,False
+031,PEONIA,Peony,,,none,no_match,False

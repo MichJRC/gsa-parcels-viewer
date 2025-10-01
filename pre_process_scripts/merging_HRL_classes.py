@@ -369,19 +369,19 @@ for hrl_code in target_hrls:
 print("\n=== STEP 9: SAVE RESULTS ===")
 
 # Save complete mapping
-results_df.to_csv('downloaded_data/GSA_to_HRL_mapping_FINAL.csv', index=False)
-print("✓ Saved: downloaded_data/GSA_to_HRL_mapping_FINAL.csv")
+results_df.to_csv('pre_process_scripts/GSA_to_HRL_mapping_FINAL.csv', index=False)
+print("✓ Saved: pre_process_scripts/GSA_to_HRL_mapping_FINAL.csv")
 
 # Save only agricultural crops (mapped + unmapped, excluding non-agricultural)
 agricultural = results_df[~results_df['Is_Excluded']].copy()
-agricultural.to_csv('downloaded_data/GSA_to_HRL_AGRICULTURAL_ONLY.csv', index=False)
-print(f"✓ Saved: downloaded_data/GSA_to_HRL_AGRICULTURAL_ONLY.csv ({len(agricultural)} agricultural crops)")
+agricultural.to_csv('pre_process_scripts/GSA_to_HRL_AGRICULTURAL_ONLY.csv', index=False)
+print(f"✓ Saved: pre_process_scripts/GSA_to_HRL_AGRICULTURAL_ONLY.csv ({len(agricultural)} agricultural crops)")
 
 # Save crops that still need review
 needs_review = results_df[(results_df['HRL_Code'].isna()) & (~results_df['Is_Excluded'])].copy()
 if len(needs_review) > 0:
-    needs_review.to_csv('downloaded_data/GSA_codes_STILL_NEED_REVIEW.csv', index=False)
-    print(f"⚠ Saved: downloaded_data/GSA_codes_STILL_NEED_REVIEW.csv ({len(needs_review)} codes)")
+    needs_review.to_csv('pre_process_scripts/GSA_codes_STILL_NEED_REVIEW.csv', index=False)
+    print(f"⚠ Saved: pre_process_scripts/GSA_codes_STILL_NEED_REVIEW.csv ({len(needs_review)} codes)")
     
     print("\nTop unmapped agricultural crops:")
     for idx, row in needs_review.head(10).iterrows():
@@ -397,8 +397,8 @@ hrl_summary = results_df[results_df['HRL_Code'].notna()].groupby('HRL_Code').agg
 }).reset_index()
 hrl_summary.columns = ['HRL_Code', 'Number_of_GSA_Codes', 'HRL_Name']
 hrl_summary = hrl_summary.sort_values('HRL_Code')
-hrl_summary.to_csv('downloaded_data/HRL_summary.csv', index=False)
-print("✓ Saved: downloaded_data/HRL_summary.csv")
+hrl_summary.to_csv('pre_process_scripts/HRL_summary.csv', index=False)
+print("✓ Saved: pre_process_scripts/HRL_summary.csv")
 
 print("\n" + "=" * 80)
 print("IMPROVED MAPPING COMPLETE!")

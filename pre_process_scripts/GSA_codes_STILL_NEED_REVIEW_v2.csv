@@ -1,0 +1,30 @@
+COD_SUOLO,DESC_SUOLO,English_Name,HRL_Code,HRL_Name,Confidence,Matched_By,Is_Excluded
+650,BOSCO,Woodland,,,none,no_match,False
+685,COLTIVAZIONI ARBOREE PROMISCUE (PIU' SPECIE ARBOREE),Mixed tree crops,,,none,no_match,False
+336,PRATO POLIFITA,Mixed grassland,,,none,no_match,False
+783,ALBERI IN FILARE,Trees in rows,,,none,no_match,False
+785,GRUPPI DI ALBERI E BOSCHETTI,Groups of trees and groves,,,none,no_match,False
+357,ERBA MEDICA  (SP. MEDICAGO SATIVA L. (VARIETA')),Alfalfa,,,none,no_match,False
+65,PASCOLO POLIFITA,Mixed pasture,,,none,no_match,False
+793,ALBERI ISOLATI,Isolated trees,,,none,no_match,False
+660,MANUFATTI,Manufactured goods,,,none,no_match,False
+69,PIOPPO,Poplar,,,none,no_match,False
+800,ERBAIO,Green fodder,,,none,no_match,False
+188,PAULOWNIA TOMENTOSA,Empress tree (Paulownia),,,none,no_match,False
+471,LOTO (KAKI) (COMPRESO IL CACO MELA),Persimmon,,,none,no_match,False
+899,PRATO PASCOLO,Pasture meadow,,,none,no_match,False
+303,FAGGIO,,,,none,no_match,False
+112,CANNA CINESE (MISCANTHUS SINENSIS),Chinese silver grass (Miscanthus sinensis),,,none,no_match,False
+484,CRESCIONE DEI GIARDINI O CRESCIONE INGLESE,Garden cress,,,none,no_match,False
+840,SULLA,Sulla (Hedysarum coronarium),,,none,no_match,False
+655,ARBORETO CONSOCIABILE (CON COLTIVAZIONI ERBACEE),Mixed arboretum (with herbaceous crops),,,none,no_match,False
+475,"MIRTILLI ROSSI, MIRTILLI NERI ED ALTRI FRUTTI DEL GENERE ""VACCINIUM""",,,,none,no_match,False
+384,TRIFOGLIO  (SP. TRIFOLIUM PRATENSE L.),Clover,,,none,no_match,False
+787,MURETTI TRADIZIONALI,Traditional dry stone walls,,,none,no_match,False
+383,TRIFOGLIO (SP. TRIFOLIUM INCARNATUM L.),Crimson clover (Trifolium incarnatum),,,none,no_match,False
+388,TRIFOGLIO (SP. TRIFOLIUM RESUPINATUM L.),Persian clover (Trifolium resupinatum),,,none,no_match,False
+359,FESTUCA  (SP. FESTUCA ARUNDINACEA SCHREB.),,,,none,no_match,False
+120,POINSETTIA (STELLA DI NATALE),Poinsettia,,,none,no_match,False
+790,TERRAZZAMENTI,Terraces,,,none,no_match,False
+316,OLIVELLO O OLIVELLO SPINOSO,Sea buckthorn,,,none,no_match,False
+619,COLTIVAZIONI ARBOREE PERMANENTI SOGGETTE A DIVIETO DI FERTILIZZAZIONE E DI TRATTAMENTO FITOSANITARIO  LUNGO I CORSI D?ACQUA,,,,none,no_match,False
