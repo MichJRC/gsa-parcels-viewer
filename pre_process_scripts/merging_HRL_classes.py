@@ -4,7 +4,7 @@ import numpy as np
 
 print("=" * 80)
 print("DIRECT GSA CODE → HRL MAPPING (IMPROVED MERGE)")
-print("Building from your actual data: parcels_cleaned.gpkg")
+print("Building from your actual data: downloaded_data/parcels_cleaned.gpkg")
 print("=" * 80)
 
 # ==============================================================================
@@ -38,7 +38,7 @@ for crop, count in top_crops.items():
 # STEP 3: Load and normalize Italian-English translation
 # ==============================================================================
 print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION (WITH NORMALIZATION) ===")
-italian_english = pd.read_csv('data/ItalianCropNamemaincrop-CorrectedEnglishCropName.csv')
+italian_english = pd.read_csv('data/ITCrops_translated.csv')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
 # Create normalized version for matching
@@ -250,9 +250,20 @@ def is_non_agricultural(italian_name, english_name):
     return any(keyword in search_text for keyword in non_agricultural_keywords)
 
 # ==============================================================================
-# STEP 7: Assign HRL codes with improved logic
+# STEP 7: Assign HRL codes with improved logic and MANUAL OVERRIDES
 # ==============================================================================
 print("\n=== STEP 7: ASSIGN HRL CODES ===")
+
+# Define manual overrides for problematic crops
+manual_overrides = {
+    'SOIA': 1420,  # Soybeans
+    'BARBABIETOLA': 1320,  # Sugar Beet (even if translation says Sugarcane)
+    'VITE': 2100,  # Grapes
+    'UVA': 2100,  # Grapes (alternative)
+    'GRANTURCO (MAIS)': 1130,  # Maize
+    'GRANO (FRUMENTO) TENERO': 1110,  # Wheat
+    'GRANO (FRUMENTO) DURO': 1110,  # Wheat
+}
 
 def assign_hrl_code(italian_name, english_name):
     """
@@ -261,6 +272,12 @@ def assign_hrl_code(italian_name, english_name):
     """
     if pd.isna(italian_name):
         return None, 'none', 'no_name', False
+    
+    # Check manual overrides FIRST
+    italian_upper = str(italian_name).upper().strip()
+    if italian_upper in manual_overrides:
+        hrl = manual_overrides[italian_upper]
+        return hrl, 'very_high', 'manual_override', False
     
     # Check if non-agricultural (should be excluded)
     if is_non_agricultural(italian_name, english_name):
@@ -352,19 +369,19 @@ for hrl_code in target_hrls:
 print("\n=== STEP 9: SAVE RESULTS ===")
 
 # Save complete mapping
-results_df.to_csv('pre_process_scripts/GSA_to_HRL_mapping_FINAL.csv', index=False)
-print("✓ Saved: GSA_to_HRL_mapping_FINAL.csv")
+results_df.to_csv('downloaded_data/GSA_to_HRL_mapping_FINAL.csv', index=False)
+print("✓ Saved: downloaded_data/GSA_to_HRL_mapping_FINAL.csv")
 
 # Save only agricultural crops (mapped + unmapped, excluding non-agricultural)
 agricultural = results_df[~results_df['Is_Excluded']].copy()
-agricultural.to_csv('pre_process_scripts/GSA_to_HRL_AGRICULTURAL_ONLY.csv', index=False)
-print(f"✓ Saved: GSA_to_HRL_AGRICULTURAL_ONLY.csv ({len(agricultural)} agricultural crops)")
+agricultural.to_csv('downloaded_data/GSA_to_HRL_AGRICULTURAL_ONLY.csv', index=False)
+print(f"✓ Saved: downloaded_data/GSA_to_HRL_AGRICULTURAL_ONLY.csv ({len(agricultural)} agricultural crops)")
 
 # Save crops that still need review
 needs_review = results_df[(results_df['HRL_Code'].isna()) & (~results_df['Is_Excluded'])].copy()
 if len(needs_review) > 0:
-    needs_review.to_csv('pre_process_scripts/GSA_codes_STILL_NEED_REVIEW.csv', index=False)
-    print(f"⚠ Saved: GSA_codes_STILL_NEED_REVIEW.csv ({len(needs_review)} codes)")
+    needs_review.to_csv('downloaded_data/GSA_codes_STILL_NEED_REVIEW.csv', index=False)
+    print(f"⚠ Saved: downloaded_data/GSA_codes_STILL_NEED_REVIEW.csv ({len(needs_review)} codes)")
     
     print("\nTop unmapped agricultural crops:")
     for idx, row in needs_review.head(10).iterrows():
@@ -380,8 +397,8 @@ hrl_summary = results_df[results_df['HRL_Code'].notna()].groupby('HRL_Code').agg
 }).reset_index()
 hrl_summary.columns = ['HRL_Code', 'Number_of_GSA_Codes', 'HRL_Name']
 hrl_summary = hrl_summary.sort_values('HRL_Code')
-hrl_summary.to_csv('pre_process_scripts/HRL_summary.csv', index=False)
-print("✓ Saved: HRL_summary.csv")
+hrl_summary.to_csv('downloaded_data/HRL_summary.csv', index=False)
+print("✓ Saved: downloaded_data/HRL_summary.csv")
 
 print("\n" + "=" * 80)
 print("IMPROVED MAPPING COMPLETE!")
