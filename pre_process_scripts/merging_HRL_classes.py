@@ -36,7 +36,7 @@ for crop, count in top_crops.items():
 # STEP 3: Load your Italian-English translation
 # ==============================================================================
 print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION ===")
-italian_english = pd.read_csv('ItalianCropNamemaincropCorrectedEnglishCropName.csv')
+italian_english = pd.read_csv('data/ItalianCropNamemaincropCorrectedEnglishCropName.csv')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
 # ==============================================================================
@@ -282,7 +282,7 @@ print("\n=== STEP 8: SAVE RESULTS ===")
 # Save complete mapping
 output_columns = ['COD_SUOLO', 'DESC_SUOLO', 'Corrected English Crop Name', 
                   'HRL_Code', 'HRL_Name', 'Confidence', 'Matched_By']
-gsa_with_english[output_columns].to_csv('GSA_to_HRL_mapping_complete.csv', index=False)
+gsa_with_english[output_columns].to_csv('pre_process_scripts/GSA_to_HRL_mapping_complete.csv', index=False)
 print("✓ Saved: GSA_to_HRL_mapping_complete.csv")
 
 # Save crops needing manual review
@@ -303,7 +303,7 @@ summary = gsa_with_english.groupby('HRL_Code').agg({
 }).reset_index()
 summary.columns = ['HRL_Code', 'Number_of_GSA_Codes', 'HRL_Name']
 summary = summary.sort_values('HRL_Code')
-summary.to_csv('HRL_summary_statistics.csv', index=False)
+summary.to_csv('pre_process_scripts/HRL_summary_statistics.csv', index=False)
 print("✓ Saved: HRL_summary_statistics.csv")
 
 print("\n" + "=" * 80)
