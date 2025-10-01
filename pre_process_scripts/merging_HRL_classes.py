@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 print("=" * 80)
-print("DIRECT GSA CODE → HRL MAPPING")
+print("DIRECT GSA CODE → HRL MAPPING (IMPROVED MERGE)")
 print("Building from your actual data: parcels_cleaned.gpkg")
 print("=" * 80)
 
@@ -11,10 +11,9 @@ print("=" * 80)
 # STEP 1: Load your geopackage
 # ==============================================================================
 print("\n=== STEP 1: LOAD GEOPACKAGE ===")
-gpkg = gpd.read_file('downloaded_data/parcels_cleaned.gpkg')
+gpkg = gpd.read_file('parcels_cleaned.gpkg')
 
 print(f"✓ Total features: {len(gpkg):,}")
-print(f"✓ Columns: {gpkg.columns.tolist()}")
 print(f"✓ CRS: {gpkg.crs}")
 
 # ==============================================================================
@@ -22,8 +21,11 @@ print(f"✓ CRS: {gpkg.crs}")
 # ==============================================================================
 print("\n=== STEP 2: EXTRACT UNIQUE GSA CODES ===")
 
-# Get unique combinations of GSA code and Italian name
+# Get unique combinations - create normalized key for matching
 gsa_unique = gpkg[['COD_SUOLO', 'DESC_SUOLO']].drop_duplicates().copy()
+# Create normalized version for matching (lowercase, stripped)
+gsa_unique['DESC_SUOLO_NORMALIZED'] = gsa_unique['DESC_SUOLO'].str.strip().str.lower()
+
 print(f"✓ Unique GSA code-name combinations: {len(gsa_unique)}")
 
 # Show distribution
@@ -33,56 +35,62 @@ for crop, count in top_crops.items():
     print(f"  {crop}: {count:,} features")
 
 # ==============================================================================
-# STEP 3: Load your Italian-English translation
+# STEP 3: Load and normalize Italian-English translation
 # ==============================================================================
-print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION ===")
-italian_english = pd.read_csv('data/ItalianCropNamemaincrop-CorrectedEnglishCropName.csv')
+print("\n=== STEP 3: LOAD ITALIAN-ENGLISH TRANSLATION (WITH NORMALIZATION) ===")
+italian_english = pd.read_csv('ItalianCropNamemaincropCorrectedEnglishCropName.csv')
 print(f"✓ Translations loaded: {len(italian_english)}")
 
+# Create normalized version for matching
+italian_english['Italian_Normalized'] = italian_english['Italian Crop Name (main_crop)'].str.strip().str.lower()
+
+print(f"Original columns: {italian_english.columns.tolist()}")
+
 # ==============================================================================
-# STEP 4: Merge GSA data with English translations
+# STEP 4: Merge using NORMALIZED keys
 # ==============================================================================
-print("\n=== STEP 4: MERGE GSA WITH ENGLISH TRANSLATIONS ===")
+print("\n=== STEP 4: MERGE USING NORMALIZED KEYS ===")
 
 gsa_with_english = gsa_unique.merge(
     italian_english,
-    left_on='DESC_SUOLO',
-    right_on='Italian Crop Name (main_crop)',
+    left_on='DESC_SUOLO_NORMALIZED',
+    right_on='Italian_Normalized',
     how='left'
 )
 
 matched = gsa_with_english['Corrected English Crop Name'].notna().sum()
 unmatched = gsa_with_english['Corrected English Crop Name'].isna().sum()
 
-print(f"✓ Matched with English: {matched}")
-print(f"⚠ Not matched: {unmatched}")
+print(f"✓ Matched with English: {matched} ({matched/len(gsa_unique)*100:.1f}%)")
+print(f"⚠ Not matched: {unmatched} ({unmatched/len(gsa_unique)*100:.1f}%)")
 
 if unmatched > 0:
-    print("\nCrops without English translation:")
-    print(gsa_with_english[gsa_with_english['Corrected English Crop Name'].isna()]['DESC_SUOLO'].tolist())
+    print(f"\n⚠ Crops still without English translation (first 10):")
+    unmatched_crops = gsa_with_english[gsa_with_english['Corrected English Crop Name'].isna()]['DESC_SUOLO'].head(10).tolist()
+    for crop in unmatched_crops:
+        print(f"  - {crop}")
 
 # ==============================================================================
-# STEP 5: Define HRL categories and mapping rules
+# STEP 5: Define HRL categories with comprehensive keywords
 # ==============================================================================
 print("\n=== STEP 5: DEFINE HRL MAPPING RULES ===")
 
-# Based on official HRL Croplands manual - 17 specific crop classes
 hrl_mapping_rules = {
     1110: {
         'name': 'Wheat',
-        'keywords_italian': ['frumento', 'grano', 'triticum'],
-        'keywords_english': ['wheat', 'triticum'],
+        'keywords_italian': ['frumento', 'grano'],
+        'keywords_english': ['wheat'],
         'priority': 1
     },
     1120: {
         'name': 'Barley',
         'keywords_italian': ['orzo'],
-        'keywords_english': ['barley', 'hordeum'],
+        'keywords_english': ['barley'],
         'priority': 1
     },
     1130: {
         'name': 'Maize',
-        'keywords_italian': ['mais', 'granoturco', 'granturco'],
+        'keywords_italian': ['mais', 'granturco', 'granoturco'],
         'keywords_english': ['maize', 'corn'],
         'priority': 1
     },
@@ -94,25 +102,26 @@ hrl_mapping_rules = {
     },
     1150: {
         'name': 'Other cereals',
-        'keywords_italian': ['avena', 'segale', 'sorgo', 'miglio', 'farro', 'spelta'],
-        'keywords_english': ['oat', 'rye', 'sorghum', 'millet', 'spelt'],
-        'priority': 2  # Lower priority - catch remaining cereals
+        'keywords_italian': ['avena', 'segale', 'sorgo', 'miglio', 'farro', 'spelta', 'triticale'],
+        'keywords_english': ['oat', 'rye', 'sorghum', 'millet', 'spelt', 'triticale'],
+        'priority': 2
     },
     1210: {
         'name': 'Fresh Vegetables',
         'keywords_italian': ['pomodoro', 'ortaggi', 'verdura', 'cavolo', 'lattuga', 
                              'melanzana', 'peperone', 'zucchina', 'cipolla', 'aglio',
                              'carota', 'sedano', 'finocchio', 'spinaci', 'asparago',
-                             'carciofo', 'melone', 'anguria', 'cocomero', 'fragola'],
+                             'carciofo', 'melone', 'anguria', 'cocomero', 'fragola',
+                             'bietola'],  # Chard is a vegetable
         'keywords_english': ['tomato', 'vegetable', 'cabbage', 'lettuce', 'eggplant',
                             'pepper', 'zucchini', 'onion', 'garlic', 'carrot',
                             'celery', 'fennel', 'spinach', 'asparagus', 'artichoke',
-                            'melon', 'watermelon', 'strawberry'],
+                            'melon', 'watermelon', 'strawberry', 'chard', 'swiss chard'],
         'priority': 1
     },
     1220: {
         'name': 'Dry pulses',
-        'keywords_italian': ['fagiolo', 'pisello', 'lenticchia', 'cece', 'fava', 'lupino'],
+        'keywords_italian': ['fagiolo', 'pisello', 'lenticchia', 'cece', 'fava', 'favino', 'lupino'],
         'keywords_english': ['bean', 'pea', 'lentil', 'chickpea', 'fava', 'lupin'],
         'priority': 1
     },
@@ -124,20 +133,20 @@ hrl_mapping_rules = {
     },
     1320: {
         'name': 'Sugar Beet',
-        'keywords_italian': ['barbabietola da zucchero', 'barbabietola zuccherina'],
-        'keywords_english': ['sugar beet', 'sugar-beet'],
+        'keywords_italian': ['barbabietola'],  # This will catch BARBABIETOLA
+        'keywords_english': ['beet', 'beetroot'],  # Will catch Beetroot
         'priority': 1
     },
     1410: {
         'name': 'Sunflower',
         'keywords_italian': ['girasole'],
-        'keywords_english': ['sunflower', 'helianthus'],
+        'keywords_english': ['sunflower'],
         'priority': 1
     },
     1420: {
         'name': 'Soybeans',
-        'keywords_italian': ['soia'],
-        'keywords_english': ['soy', 'soybean', 'soja'],
+        'keywords_italian': ['soia', 'soja'],
+        'keywords_english': ['soy', 'soybean'],
         'priority': 1
     },
     1430: {
@@ -154,8 +163,8 @@ hrl_mapping_rules = {
     },
     2100: {
         'name': 'Grapes',
-        'keywords_italian': ['vite', 'uva', 'vigneto'],
-        'keywords_english': ['grape', 'vine', 'vineyard'],
+        'keywords_italian': ['vite', 'uva', 'vigneto', 'vitigno'],
+        'keywords_english': ['grape', 'vine', 'grapevine', 'vineyard'],
         'priority': 1
     },
     2200: {
@@ -169,11 +178,12 @@ hrl_mapping_rules = {
         'keywords_italian': ['melo', 'pero', 'pesco', 'albicocco', 'ciliegio', 
                              'prugno', 'susino', 'agrumi', 'arancio', 'limone',
                              'mandarino', 'pompelmo', 'fico', 'kiwi', 'actinidia',
-                             'mirtillo', 'lampone', 'ribes', 'frutteto'],
+                             'mirtillo', 'lampone', 'ribes', 'frutteto', 'marasca',
+                             'visciola', 'amarena'],
         'keywords_english': ['apple', 'pear', 'peach', 'apricot', 'cherry',
                             'plum', 'citrus', 'orange', 'lemon', 'mandarin',
                             'grapefruit', 'fig', 'kiwi', 'blueberry', 'raspberry',
-                            'currant', 'fruit tree', 'orchard'],
+                            'currant', 'fruit tree', 'orchard', 'morello'],
         'priority': 1
     },
     2320: {
@@ -187,22 +197,44 @@ hrl_mapping_rules = {
 print(f"✓ Defined mapping rules for {len(hrl_mapping_rules)} HRL categories")
 
 # ==============================================================================
-# STEP 6: Apply mapping rules to assign HRL codes
+# STEP 6: Define non-agricultural categories to EXCLUDE
 # ==============================================================================
-print("\n=== STEP 6: ASSIGN HRL CODES TO GSA CODES ===")
+print("\n=== STEP 6: DEFINE NON-AGRICULTURAL CATEGORIES ===")
+
+non_agricultural_keywords = {
+    'uso non agricolo', 'non agricultural', 'fabbricati', 'buildings',
+    'tare', 'margini', 'margins', 'field margins', 'fossati', 'canali', 'ditches',
+    'siepi', 'hedges', 'fasce tampone', 'buffer strips', 'buffer',
+    'ritirate dalla produzione', 'withdrawn', 'maceri', 'stagni', 'laghetti', 'ponds',
+    'serre', 'greenhouse', 'vivai', 'nursery', 'orti familiari', 'family garden'
+}
+
+def is_non_agricultural(italian_name, english_name):
+    """Check if this is non-agricultural land that should be excluded"""
+    search_text = f"{str(italian_name).lower()} {str(english_name).lower()}"
+    return any(keyword in search_text for keyword in non_agricultural_keywords)
+
+# ==============================================================================
+# STEP 7: Assign HRL codes with improved logic
+# ==============================================================================
+print("\n=== STEP 7: ASSIGN HRL CODES ===")
 
 def assign_hrl_code(italian_name, english_name):
     """
     Assign HRL code based on Italian and English crop names.
-    Returns (hrl_code, confidence, matched_by)
+    Returns (hrl_code, confidence, matched_by, is_excluded)
     """
     if pd.isna(italian_name):
-        return None, 'none', 'no_name'
+        return None, 'none', 'no_name', False
+    
+    # Check if non-agricultural (should be excluded)
+    if is_non_agricultural(italian_name, english_name):
+        return None, 'excluded', 'non_agricultural', True
     
     italian_lower = str(italian_name).lower()
     english_lower = str(english_name).lower() if pd.notna(english_name) else ''
     
-    # Try to match with priority 1 rules first (specific crops)
+    # Try to match with specific crops first (priority 1), then broader categories
     for priority in [1, 2]:
         for hrl_code, rules in hrl_mapping_rules.items():
             if rules['priority'] != priority:
@@ -211,108 +243,118 @@ def assign_hrl_code(italian_name, english_name):
             # Check Italian keywords
             for keyword in rules['keywords_italian']:
                 if keyword in italian_lower:
-                    return hrl_code, 'high', f'italian:{keyword}'
+                    return hrl_code, 'high', f'italian:{keyword}', False
             
             # Check English keywords
             if english_lower:
                 for keyword in rules['keywords_english']:
                     if keyword in english_lower:
-                        return hrl_code, 'high', f'english:{keyword}'
+                        return hrl_code, 'high', f'english:{keyword}', False
     
     # No match found
-    return None, 'none', 'no_match'
+    return None, 'none', 'no_match', False
 
 # Apply the mapping
 print("Applying mapping rules...")
-gsa_with_english['HRL_Code'] = None
-gsa_with_english['HRL_Name'] = None
-gsa_with_english['Confidence'] = None
-gsa_with_english['Matched_By'] = None
+results = []
 
 for idx, row in gsa_with_english.iterrows():
-    hrl_code, confidence, matched_by = assign_hrl_code(
+    hrl_code, confidence, matched_by, is_excluded = assign_hrl_code(
         row['DESC_SUOLO'], 
         row['Corrected English Crop Name']
     )
     
-    gsa_with_english.at[idx, 'HRL_Code'] = hrl_code
-    if hrl_code:
-        gsa_with_english.at[idx, 'HRL_Name'] = hrl_mapping_rules[hrl_code]['name']
-    gsa_with_english.at[idx, 'Confidence'] = confidence
-    gsa_with_english.at[idx, 'Matched_By'] = matched_by
+    results.append({
+        'COD_SUOLO': row['COD_SUOLO'],
+        'DESC_SUOLO': row['DESC_SUOLO'],
+        'English_Name': row['Corrected English Crop Name'],
+        'HRL_Code': hrl_code,
+        'HRL_Name': hrl_mapping_rules[hrl_code]['name'] if hrl_code else None,
+        'Confidence': confidence,
+        'Matched_By': matched_by,
+        'Is_Excluded': is_excluded
+    })
+
+results_df = pd.DataFrame(results)
 
 # ==============================================================================
-# STEP 7: Analyze results
+# STEP 8: Analyze results
 # ==============================================================================
-print("\n=== STEP 7: MAPPING RESULTS ===")
+print("\n=== STEP 8: MAPPING RESULTS ===")
 
-total_gsa_codes = len(gsa_with_english)
-mapped_codes = gsa_with_english['HRL_Code'].notna().sum()
-unmapped_codes = gsa_with_english['HRL_Code'].isna().sum()
+total = len(results_df)
+mapped = results_df['HRL_Code'].notna().sum()
+excluded = results_df['Is_Excluded'].sum()
+unmapped = total - mapped - excluded
 
-print(f"Total unique GSA codes: {total_gsa_codes}")
-print(f"Successfully mapped: {mapped_codes} ({mapped_codes/total_gsa_codes*100:.1f}%)")
-print(f"Need manual assignment: {unmapped_codes} ({unmapped_codes/total_gsa_codes*100:.1f}%)")
+print(f"Total unique GSA codes: {total}")
+print(f"✓ Successfully mapped to HRL: {mapped} ({mapped/total*100:.1f}%)")
+print(f"✓ Excluded (non-agricultural): {excluded} ({excluded/total*100:.1f}%)")
+print(f"⚠ Still need review: {unmapped} ({unmapped/total*100:.1f}%)")
 
 # Show distribution by HRL code
 print("\n=== HRL CODE DISTRIBUTION ===")
-hrl_counts = gsa_with_english['HRL_Code'].value_counts().sort_index()
+hrl_counts = results_df['HRL_Code'].value_counts().sort_index()
 
 target_hrls = [1110, 1120, 1130, 1140, 1150, 1210, 1220, 1310, 1320,
                1410, 1420, 1430, 1440, 2100, 2200, 2310, 2320]
 
+print("\nTarget HRL codes (17 specific crop classes):")
 for hrl_code in target_hrls:
     if hrl_code in hrl_counts.index:
         count = hrl_counts[hrl_code]
         hrl_name = hrl_mapping_rules[hrl_code]['name']
-        status = "✓"
-        # Highlight the 3 that were missing
-        if hrl_code in [1110, 1130, 1320]:
-            status = "⭐"
+        # Highlight the 3 that were originally missing
+        status = "⭐" if hrl_code in [1110, 1130, 1320] else "✓"
         print(f"{status} HRL {hrl_code} ({hrl_name}): {count} GSA codes")
     else:
         hrl_name = hrl_mapping_rules[hrl_code]['name']
         print(f"❌ HRL {hrl_code} ({hrl_name}): 0 GSA codes")
 
 # ==============================================================================
-# STEP 8: Save results
+# STEP 9: Save results
 # ==============================================================================
-print("\n=== STEP 8: SAVE RESULTS ===")
+print("\n=== STEP 9: SAVE RESULTS ===")
 
 # Save complete mapping
-output_columns = ['COD_SUOLO', 'DESC_SUOLO', 'Corrected English Crop Name', 
-                  'HRL_Code', 'HRL_Name', 'Confidence', 'Matched_By']
-gsa_with_english[output_columns].to_csv('pre_process_scripts/GSA_to_HRL_mapping_complete.csv', index=False)
-print("✓ Saved: GSA_to_HRL_mapping_complete.csv")
+results_df.to_csv('GSA_to_HRL_mapping_FINAL.csv', index=False)
+print("✓ Saved: GSA_to_HRL_mapping_FINAL.csv")
 
-# Save crops needing manual review
-needs_review = gsa_with_english[gsa_with_english['HRL_Code'].isna()].copy()
+# Save only agricultural crops (mapped + unmapped, excluding non-agricultural)
+agricultural = results_df[~results_df['Is_Excluded']].copy()
+agricultural.to_csv('pre_process_scripts/GSA_to_HRL_AGRICULTURAL_ONLY.csv', index=False)
+print(f"✓ Saved: GSA_to_HRL_AGRICULTURAL_ONLY.csv ({len(agricultural)} agricultural crops)")
+
+# Save crops that still need review
+needs_review = results_df[(results_df['HRL_Code'].isna()) & (~results_df['Is_Excluded'])].copy()
 if len(needs_review) > 0:
-    needs_review[output_columns].to_csv('pre_process_scripts/GSA_codes_NEED_MANUAL_HRL.csv', index=False)
-    print(f"⚠ Saved: GSA_codes_NEED_MANUAL_HRL.csv ({len(needs_review)} codes to review)")
-    print("\nTop unmapped crops:")
-    for _, row in needs_review.head(10).iterrows():
-        print(f"  - {row['DESC_SUOLO']} ({row['Corrected English Crop Name']})")
+    needs_review.to_csv('pre_process_scripts/GSA_codes_STILL_NEED_REVIEW.csv', index=False)
+    print(f"⚠ Saved: GSA_codes_STILL_NEED_REVIEW.csv ({len(needs_review)} codes)")
+    
+    print("\nTop unmapped agricultural crops:")
+    for idx, row in needs_review.head(10).iterrows():
+        eng = f"({row['English_Name']})" if pd.notna(row['English_Name']) else "(no translation)"
+        print(f"  - {row['DESC_SUOLO']} {eng}")
 else:
-    print("✅ All GSA codes successfully mapped!")
+    print("✅ All agricultural crops successfully mapped!")
 
-# Save summary statistics
-summary = gsa_with_english.groupby('HRL_Code').agg({
+# Save summary by HRL
+hrl_summary = results_df[results_df['HRL_Code'].notna()].groupby('HRL_Code').agg({
     'COD_SUOLO': 'count',
     'HRL_Name': 'first'
 }).reset_index()
-summary.columns = ['HRL_Code', 'Number_of_GSA_Codes', 'HRL_Name']
-summary = summary.sort_values('HRL_Code')
-summary.to_csv('pre_process_scripts/HRL_summary_statistics.csv', index=False)
-print("✓ Saved: HRL_summary_statistics.csv")
+hrl_summary.columns = ['HRL_Code', 'Number_of_GSA_Codes', 'HRL_Name']
+hrl_summary = hrl_summary.sort_values('HRL_Code')
+hrl_summary.to_csv('pre_process_scripts/HRL_summary.csv', index=False)
+print("✓ Saved: HRL_summary.csv")
 
 print("\n" + "=" * 80)
-print("MAPPING COMPLETE!")
+print("IMPROVED MAPPING COMPLETE!")
 print("=" * 80)
-print("\nNEXT STEPS:")
-print("1. Review 'GSA_to_HRL_mapping_complete.csv'")
-if len(needs_review) > 0:
-    print("2. Complete manual assignments in 'GSA_codes_NEED_MANUAL_HRL.csv'")
-    print("3. Re-run with completed manual assignments")
-print("4. Apply the final mapping to your geopackage!")
+print("\nKEY IMPROVEMENTS:")
+print("✓ Normalized string matching (case-insensitive, trimmed)")
+print("✓ Non-agricultural land automatically excluded")
+print("✓ Better keyword coverage for Italian crops")
+print("✓ Should now match: BARBABIETOLA, SOIA, VITE, etc.")
+print("\nCheck if HRL 1130, 1320, 1420, 2100 are now recovered!")
 print("=" * 80)
