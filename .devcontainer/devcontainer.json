@@ -10,5 +10,6 @@
         "ms-python.vscode-pylance"
       ]
     }
-  }
+  },
+  "forwardPorts": [8888]
 }
