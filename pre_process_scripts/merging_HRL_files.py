@@ -22,7 +22,7 @@ out_meta.update({
     "transform": out_trans
 })
 
-with rasterio.open('downloaded_data/hrl_croptype_2021_mosaic.tif', 'w', **out_meta) as dest:
+with rasterio.open('data/hrl_croptype_2021_mosaic.tif', 'w', **out_meta) as dest:
     dest.write(mosaic)
 
 # Close files
