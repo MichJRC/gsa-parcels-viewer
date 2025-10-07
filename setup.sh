@@ -1,11 +1,11 @@
 #!/bin/bash
-
 set -e  # Exit on any error
 
 echo "Setting up GSA Parcels Viewer data..."
 
-# Create data directory
+# Create data directories
 mkdir -p downloaded_data
+mkdir -p data/hrl_tiles
 
 # Download original shapefile from release
 echo "Downloading original shapefile data (50 MB)..."
@@ -27,13 +27,13 @@ wget -q --show-progress -O downloaded_data/parcels_with_HRL_codes.gpkg \
   https://github.com/MichJRC/gsa-parcels-viewer/releases/download/v1.0.0/parcels_with_HRL_codes.gpkg
 
 # Download HRL tiles
-echo "Downloading HRL-tiles"
-wget -q --show-progress -O downloaded_data/hrl_tiles_mosaic.tar.gz \
+echo "Downloading HRL tiles..."
+wget -q --show-progress -O data/hrl_tiles/hrl_tiles_mosaic.tar.gz \
   https://github.com/MichJRC/gsa-parcels-viewer/releases/download/v1.0.0/hrl_tiles_mosaic.tar.gz
 
-# Unzip the tiles
-echo "Extracting the tiles..."
-cd downloaded_data && unzip -q -o hrl_tiles_mosaic.tar.gz && cd ..
+# Extract the tiles using tar (not unzip)
+echo "Extracting HRL tiles..."
+cd data/hrl_tiles && tar -xzf hrl_tiles_mosaic.tar.gz && cd ../..
 
 # Verify all files were downloaded
 echo ""
@@ -42,7 +42,7 @@ FILES=(
     "downloaded_data/Appe_Azi_PCG_2021_FE.zip"
     "downloaded_data/parcels_cleaned.gpkg"
     "downloaded_data/parcels_with_HRL_codes.gpkg"
-    "downloaded_data/hrl_tiles_mosaic.tar.gz"
+    "data/hrl_tiles/hrl_tiles_mosaic.tar.gz"
 )
 
 ALL_PRESENT=true
@@ -56,6 +56,15 @@ for file in "${FILES[@]}"; do
     fi
 done
 
+# Check if tiles were extracted
+if [ -d "data/hrl_tiles/hrl_tiles_mosaic" ]; then
+    TILE_COUNT=$(find data/hrl_tiles/hrl_tiles_mosaic -name "*.png" | wc -l)
+    echo "✓ HRL tiles extracted ($TILE_COUNT tiles)"
+else
+    echo "✗ HRL tiles not extracted properly"
+    ALL_PRESENT=false
+fi
+
 echo ""
 if [ "$ALL_PRESENT" = true ]; then
     echo "✅ Data setup complete!"
@@ -64,7 +73,9 @@ if [ "$ALL_PRESENT" = true ]; then
     echo "  1. Appe_Azi_PCG_2021_FE/ - Original shapefile"
     echo "  2. parcels_cleaned.gpkg - Cleaned parcels"
     echo "  3. parcels_with_HRL_codes.gpkg - HRL-classified parcels (ready to use)"
-    echo "  4. hrl_tiles_mosaic.tar.gz - hrl_tiles_mosaic (ready to use)"
+    echo "  4. hrl_tiles_mosaic/ - HRL raster tiles (ready to use)"
+    echo ""
+    echo "You can now run: python3 pre_process_scripts/app.py"
 else
     echo "❌ Setup incomplete - some files are missing"
     exit 1
