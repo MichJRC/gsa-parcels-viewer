@@ -26,6 +26,11 @@ echo "Downloading HRL-classified parcels data..."
 wget -q --show-progress -O downloaded_data/parcels_with_HRL_codes.gpkg \
   https://github.com/MichJRC/gsa-parcels-viewer/releases/download/v1.0.0/parcels_with_HRL_codes.gpkg
 
+# Download HRL tiles
+#echo "Downloading HRL-tiles"
+#wget -q --show-progress -O downloaded_data/parcels_with_HRL_codes.gpkg \
+#  https://github.com/MichJRC/gsa-parcels-viewer/releases/download/v1.0.0/parcels_with_HRL_codes.gpkg
+
 # Verify all files were downloaded
 echo ""
 echo "Verifying downloads..."
