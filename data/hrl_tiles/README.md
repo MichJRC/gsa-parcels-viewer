@@ -26,3 +26,5 @@ The `hrl_colors.txt` file maps HRL classification codes to RGB colors.
 ### 2. Apply color relief to the GeoTIFF
 ```bash
 gdaldem color-relief hrl_croptype_2021_mosaic_compress.tif hrl_colors.txt hrl_colored.tif -alpha
+
+gdal2tiles.py -z 10-14 --processes=4 hrl_colored.tif hrl_tiles_mosaic
