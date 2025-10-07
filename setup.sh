@@ -31,9 +31,23 @@ echo "Downloading HRL tiles..."
 wget -q --show-progress -O data/hrl_tiles/hrl_tiles_mosaic.tar.gz \
   https://github.com/MichJRC/gsa-parcels-viewer/releases/download/v1.0.0/hrl_tiles_mosaic.tar.gz
 
-# Extract the tiles using tar (not unzip)
+# Extract the tiles using tar
 echo "Extracting HRL tiles..."
-cd data/hrl_tiles && tar -xzf hrl_tiles_mosaic.tar.gz && cd ../..
+cd data/hrl_tiles
+tar -xzf hrl_tiles_mosaic.tar.gz
+
+# Fix nested folder structure if present
+# The tar might extract to data/hrl_tiles/hrl_tiles_mosaic or just hrl_tiles_mosaic
+if [ -d "data/hrl_tiles/hrl_tiles_mosaic" ]; then
+    echo "Fixing nested folder structure..."
+    mv data/hrl_tiles/hrl_tiles_mosaic ./
+    rm -rf data
+elif [ ! -d "hrl_tiles_mosaic" ]; then
+    echo "⚠️  Warning: Unexpected tile structure after extraction"
+    ls -la
+fi
+
+cd ../..
 
 # Verify all files were downloaded
 echo ""
@@ -58,10 +72,20 @@ done
 
 # Check if tiles were extracted
 if [ -d "data/hrl_tiles/hrl_tiles_mosaic" ]; then
-    TILE_COUNT=$(find data/hrl_tiles/hrl_tiles_mosaic -name "*.png" | wc -l)
-    echo "✓ HRL tiles extracted ($TILE_COUNT tiles)"
+    TILE_COUNT=$(find data/hrl_tiles/hrl_tiles_mosaic -name "*.png" 2>/dev/null | wc -l)
+    if [ "$TILE_COUNT" -gt 0 ]; then
+        echo "✓ HRL tiles extracted ($TILE_COUNT tiles)"
+    else
+        echo "⚠️  HRL tiles folder exists but no PNG files found"
+        echo "   Checking folder structure:"
+        ls -la data/hrl_tiles/hrl_tiles_mosaic/ | head -10
+        ALL_PRESENT=false
+    fi
 else
     echo "✗ HRL tiles not extracted properly"
+    echo "   Expected: data/hrl_tiles/hrl_tiles_mosaic/"
+    echo "   Found in data/hrl_tiles/:"
+    ls -la data/hrl_tiles/
     ALL_PRESENT=false
 fi
 
