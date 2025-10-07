@@ -1,4 +1,4 @@
-markdown# HRL Crop Type Tiles
+# HRL Crop Type Tiles
 
 This folder contains HRL (High Resolution Layer) crop classification data for 2021.
 
