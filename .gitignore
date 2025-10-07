@@ -212,6 +212,7 @@ marimo/_lsp/
 __marimo__/
 
 #tiles
-data/hrl_tiles/hrl_tiles_mosaic/
-data/hrl_tiles/hrl_colored.tif
-data/hrl_tiles/temp.vrt
+data/hrl_tiles/*
+!data/hrl_tiles/hrl_colors.txt
+!data/hrl_tiles/.gitkeep
+!data/hrl_tiles/README.md
