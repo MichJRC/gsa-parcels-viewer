@@ -211,7 +211,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-#tiles
+# Tiles folder - ignore everything except specific files
 data/hrl_tiles/*
 !data/hrl_tiles/hrl_colors.txt
 !data/hrl_tiles/.gitkeep
