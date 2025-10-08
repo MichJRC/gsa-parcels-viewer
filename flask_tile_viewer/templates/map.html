@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <title>GDAL Tiles Viewer</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: "Calibri", "Trebuchet MS", "Ubuntu", sans-serif; 
+        }
+        #map { 
+            position: absolute; 
+            top: 0; 
+            bottom: 0; 
+            width: 100%; 
+        }
+        .info {
+            padding: 6px 8px;
+            background: white;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    // Base layers
+    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        minZoom: 10,
+        maxZoom: 14
+    });
+
+    var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CartoDB</a>',
+        minZoom: 10,
+        maxZoom: 14
+    });
+
+    // Your GDAL tiles - NOTE: tms: true is important for GDAL tiles!
+    var gdalTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+        tms: true,  // GDAL uses TMS tile numbering
+        opacity: 0.7,
+        attribution: 'GDAL Tiles',
+        minZoom: 10,
+        maxZoom: 14
+    });
+
+    // Initialize map
+    var map = L.map('map', {
+        center: [44.6819298660025, 11.65024823991047],
+        zoom: 12,
+        minZoom: 10,
+        maxZoom: 14,
+        layers: [osm, gdalTiles]
+    });
+
+    // Layer control
+    var basemaps = {
+        "OpenStreetMap": osm,
+        "CartoDB Positron": cartodb
+    };
+    
+    var overlays = {
+        "GDAL Tiles": gdalTiles
+    };
+
+    L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
+
+    // Info box
+    var info = L.control({position: 'topright'});
+    info.onAdd = function(map) {
+        this._div = L.DomUtil.create('div', 'info');
+        this._div.innerHTML = '<h4>GDAL Tiles Viewer</h4>Status: Loading tiles...';
+        return this._div;
+    };
+    info.addTo(map);
+
+    // Fit to overlay bounds (from your original file)
+    map.fitBounds([
+        [43.75133566504181, 13.569333095211608],  // SW
+        [45.61252406696319, 9.731163384609332]    // NE
+    ]);
+
+    // Debug: Log tile load errors
+    gdalTiles.on('tileerror', function(error, tile) {
+        console.error('Tile load error:', error);
+    });
+
+    gdalTiles.on('tileload', function() {
+        info._div.innerHTML = '<h4>GDAL Tiles Viewer</h4>Status: Tiles loaded successfully! ✓';
+    });
+</script>
+
+</body>
+</html>
