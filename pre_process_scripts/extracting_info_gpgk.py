@@ -1,3 +1,10 @@
 import geopandas as gpd
 
-gdf = gpd.read_file("downloaded_data/Appe_Azi_PCG_2021_FE/Appe_Azi_PCG_2021_FE.shp")
+gdf = gpd.read_file("downloaded_data/parcels_with_HRL_codes.gpkg")
+
+col = gdf.columns
+print(col)
+
+# get the unique classes of hrl
+unique_combinations = gdf[['hrl_code', 'hrl_name']].drop_duplicates()
+print(f"Unique combinations:\n{unique_combinations}")
