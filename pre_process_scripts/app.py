@@ -34,12 +34,13 @@ raster_path = None
 raster_crs = None
 cod_suolo_colors = None
 
-# Region bounds (adjust if needed)
+# Region bounds - adjusted to match tile coverage
+# Tiles cover Northern Italy (approximately)
 REGION_BOUNDS = {
-    'north': 45.447,
-    'south': 43.994,
-    'east': 12.568,
-    'west': 10.903
+    'north': 45.5,
+    'south': 43.5,
+    'east': 12.5,
+    'west': 11.0
 }
 
 def load_parcel_data(file_path, crop_to_region=False):
@@ -210,8 +211,12 @@ def get_raster_stats_in_bbox(north, south, east, west):
 @app.route('/')
 def index():
     """Main page"""
-    center_lat = (REGION_BOUNDS['north'] + REGION_BOUNDS['south']) / 2
-    center_lng = (REGION_BOUNDS['east'] + REGION_BOUNDS['west']) / 2
+    # Center on actual tile coverage area
+    # Based on tile coordinates: zoom 12, X: 2180, Y: 2617 (center)
+    # This corresponds to Trentino-Alto Adige region (northern Italy)
+    center_lat = 45.9
+    center_lng = 11.8
+    initial_zoom = 12  # Start at zoom level where tiles are visible
     
     html = """
 <!DOCTYPE html>
@@ -293,7 +298,7 @@ def index():
     </div>
 
     <script>
-        var map=L.map('map').setView([{{center_lat}},{{center_lng}}],10);
+        var map=L.map('map').setView([{{center_lat}},{{center_lng}}],{{initial_zoom}});
         
         var baseLayers={
             "OpenStreetMap":L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}),
@@ -305,7 +310,7 @@ def index():
         
         var parcelLayer=L.layerGroup().addTo(map);
         
-        var hrlRasterLayer=L.tileLayer('/raster_tile/{z}/{x}/{y}.png',{
+        var hrlRasterLayer=L.tileLayer('/data/hrl_tiles/hrl_tiles_mosaic/{z}/{x}/{y}.png',{
             attribution:'HRL Crop Type 2021',
             opacity:0.7,
             minZoom:10,
@@ -486,7 +491,8 @@ def index():
         parcel_count=f"{len(gdf_global):,}",
         cod_suolo_colors=json.dumps(cod_suolo_colors),
         center_lat=center_lat,
-        center_lng=center_lng
+        center_lng=center_lng,
+        initial_zoom=initial_zoom
     )
 
 @app.route('/api/features')
@@ -548,7 +554,11 @@ def get_features():
 @app.route('/raster_tile/<int:z>/<int:x>/<int:y>.png')
 def get_raster_tile(z, x, y):
     """Serve pre-generated raster tiles"""
-    tiles_base = os.path.join('..', 'data', 'hrl_tiles', 'hrl_tiles_mosaic')
+    # Get absolute path to tiles
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(script_dir)
+    tiles_base = os.path.join(repo_root, 'data', 'hrl_tiles', 'hrl_tiles_mosaic')
+    
     tile_file = os.path.join(tiles_base, str(z), str(x), f'{y}.png')
     
     if os.path.exists(tile_file):
@@ -558,9 +568,13 @@ def get_raster_tile(z, x, y):
         return '', 404
 
 if __name__ == '__main__':
-    # Configuration - File paths
-    GPKG_FILE = "../downloaded_data/parcels_with_HRL_codes.gpkg"
-    GEOTIFF_FILE = "../data/hrl_tiles/hrl_croptype_2021_mosaic_compress.tif"
+    # Configuration - File paths (relative to repository root)
+    # Get the directory where this script is located
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+    
+    GPKG_FILE = os.path.join(REPO_ROOT, "downloaded_data", "parcels_with_HRL_codes.gpkg")
+    GEOTIFF_FILE = os.path.join(REPO_ROOT, "data", "hrl_tiles", "hrl_croptype_2021_mosaic_compress.tif")
     
     # Set to True to filter to specific region (faster loading)
     # Set to False to load all parcels

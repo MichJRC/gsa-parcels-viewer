@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tile Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <style>
+        body { margin: 0; }
+        #map { height: 100vh; }
+        #info { position: absolute; top: 10px; right: 10px; background: white; padding: 10px; z-index: 1000; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <div>Current Zoom: <span id="zoom">-</span></div>
+        <div>Center: <span id="coords">-</span></div>
+        <div>Requesting tile: <span id="tile">-</span></div>
+    </div>
+    <div id="map"></div>
+    
+    <script>
+        // Start at zoom 12, middle of your tile range
+        var map = L.map('map').setView([45.9, 11.8], 12);
+        
+        // Base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        
+        // Your HRL tiles - using file:// protocol for local testing
+        var hrlLayer = L.tileLayer('/data/hrl_tiles/hrl_tiles_mosaic/{z}/{x}/{y}.png', {
+            attribution: 'HRL Tiles',
+            opacity: 0.7,
+            minZoom: 10,
+            maxZoom: 14,
+            errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        });
+        
+        // Add layer control
+        L.control.layers({
+            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+        }, {
+            "HRL Tiles": hrlLayer
+        }).addTo(map);
+        
+        // Add HRL layer by default
+        hrlLayer.addTo(map);
+        
+        // Update info display
+        function updateInfo() {
+            var center = map.getCenter();
+            var zoom = map.getZoom();
+            document.getElementById('zoom').textContent = zoom;
+            document.getElementById('coords').textContent = center.lat.toFixed(4) + ', ' + center.lng.toFixed(4);
+            
+            // Calculate tile coordinates
+            var tilePoint = map.project(center, zoom).divideBy(256).floor();
+            document.getElementById('tile').textContent = zoom + '/' + tilePoint.x + '/' + tilePoint.y + '.png';
+        }
+        
+        map.on('moveend', updateInfo);
+        map.on('zoomend', updateInfo);
+        updateInfo();
+        
+        // Log tile requests
+        hrlLayer.on('tileerror', function(error) {
+            console.error('Tile not found:', error.tile.src);
+        });
+        
+        hrlLayer.on('tileload', function(event) {
+            console.log('Tile loaded successfully:', event.tile.src);
+        });
+    </script>
+</body>
+</html>
