@@ -11,7 +11,13 @@
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.terminal.activateEnvironment": true
+        "python.terminal.activateEnvironment": true,
+        "jupyter.kernels.filter": [
+          {
+            "path": "/usr/local/bin/python",
+            "type": "pythonEnvironment"
+          }
+        ]
       }
     }
   },
