@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-    <title>GDAL Tiles Viewer</title>
+    <title>Parcel Validation Tool</title>
 
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,16 +21,120 @@
             bottom: 0; 
             width: 100%; 
         }
-        .info {
-            padding: 6px 8px;
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 350px;
+            max-height: 90vh;
+            overflow-y: auto;
             background: white;
-            background: rgba(255,255,255,0.9);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            z-index: 1000;
         }
-        .info h4 {
-            margin: 0 0 5px;
-            color: #777;
+        .info-header {
+            background: #7B1FA2;
+            color: white;
+            padding: 12px;
+            border-radius: 8px 8px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .info-content {
+            padding: 15px;
+        }
+        .stat-box {
+            background: #F3E5F5;
+            border: 1px solid #7B1FA2;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #7B1FA2;
+        }
+        .loading {
+            color: #F57C00;
+            font-style: italic;
+        }
+        .error {
+            color: #D32F2F;
+            background: #FFEBEE;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .success {
+            color: #2E7D32;
+        }
+        
+        /* Parcel popup styles */
+        .parcel-popup {
+            font-family: "Calibri", "Trebuchet MS", "Ubuntu", sans-serif;
+        }
+        .popup-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #7B1FA2;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #7B1FA2;
+            padding-bottom: 5px;
+        }
+        .popup-row {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .popup-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .popup-value {
+            color: #333;
+        }
+        .agreement-match {
+            background: #C8E6C9;
+            color: #2E7D32;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .agreement-mismatch {
+            background: #FFCDD2;
+            color: #C62828;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .pixel-breakdown {
+            margin-top: 8px;
+            padding: 8px;
+            background: #F5F5F5;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .pixel-item {
+            margin: 3px 0;
+        }
+        
+        /* Parcel styles */
+        .parcel-polygon {
+            stroke-width: 2;
+            fill-opacity: 0.3;
+        }
+        .parcel-polygon:hover {
+            fill-opacity: 0.6;
+            stroke-width: 3;
         }
     </style>
 </head>
@@ -38,73 +142,404 @@
 
 <div id="map"></div>
 
+<!-- Statistics Panel -->
+<div class="info-panel" id="stats-panel">
+    <div class="info-header">
+        📊 Analysis Panel
+    </div>
+    <div class="info-content">
+        <div class="stat-box">
+            <div class="stat-label">Overall Accuracy</div>
+            <div class="stat-value" id="overall-accuracy">--</div>
+        </div>
+        
+        <div id="panel-content">
+            <p style="color: #666; font-size: 12px;">
+                Click on a parcel to see detailed information.<br><br>
+                Zoom in (level 12+) and the statistics will calculate automatically for the visible area.
+            </p>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Base layers
-    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        minZoom: 10,
-        maxZoom: 14
-    });
+// Base layers
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    minZoom: 10,
+    maxZoom: 18
+});
 
-    var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CartoDB</a>',
-        minZoom: 10,
-        maxZoom: 14
-    });
+var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CartoDB</a>',
+    minZoom: 10,
+    maxZoom: 18
+});
 
-    // Your GDAL tiles - NOTE: tms: true is important for GDAL tiles!
-    var gdalTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
-        tms: true,  // GDAL uses TMS tile numbering
-        opacity: 0.7,
-        attribution: 'GDAL Tiles',
-        minZoom: 10,
-        maxZoom: 14
-    });
+// GDAL tiles - HIDDEN by default
+var gdalTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+    tms: true,
+    opacity: 0.7,
+    attribution: 'HRL Tiles',
+    minZoom: 10,
+    maxZoom: 14
+});
 
-    // Initialize map
-    var map = L.map('map', {
-        center: [44.6819298660025, 11.65024823991047],
-        zoom: 12,
-        minZoom: 10,
-        maxZoom: 14,
-        layers: [osm, gdalTiles]
-    });
+// Initialize map (tiles NOT added to initial layers)
+var map = L.map('map', {
+    center: [44.6819298660025, 11.65024823991047],
+    zoom: 12,
+    minZoom: 10,
+    maxZoom: 18,
+    layers: [osm]  // Only base layer initially
+});
 
-    // Layer control
-    var basemaps = {
-        "OpenStreetMap": osm,
-        "CartoDB Positron": cartodb
+// Parcels layer
+var parcelsLayer;
+
+// Color mapping function (from vector class name to color)
+function getParcelColor(className) {
+    const colorMap = {
+        'Wheat': '#FFEB3B',
+        'Barley': '#FFC107',
+        'Maize': '#CDDC39',
+        'Rice': '#FBC02D',
+        'Other cereals': '#F48FB1',
+        'Fresh Vegetables': '#9C27B0',
+        'Dry pulses': '#673AB7',
+        'Potatoes': '#3F51B5',
+        'Sugar Beet': '#2196F3',
+        'Sunflower': '#00BCD4',
+        'Soybeans': '#009688',
+        'Rapeseed': '#4CAF50',
+        'Flax, cotton and hemp': '#8BC34A',
+        'Grapes': '#FF5722',
+        'Olives': '#795548',
+        'Fruits': '#9E9E9E',
+        'Nuts': '#757575',
+        'Unclassified arable crop': '#FF9800',
+        'Unclassified permanent crop': '#FFC107',
+        'Unmapped': '#BDBDBD'
     };
+    return colorMap[className] || '#CCCCCC';
+}
+
+// Style function for parcels
+function parcelStyle(feature) {
+    return {
+        fillColor: getParcelColor(feature.properties.hrl_name),
+        weight: 2,
+        opacity: 1,
+        color: '#666',
+        fillOpacity: 0.4
+    };
+}
+
+// Highlight on hover
+function highlightParcel(e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 4,
+        color: '#7B1FA2',
+        fillOpacity: 0.7
+    });
+    layer.bringToFront();
+}
+
+// Reset highlight
+function resetHighlight(e) {
+    parcelsLayer.resetStyle(e.target);
+}
+
+// Click handler - fetch raster class and show popup
+function onParcelClick(e) {
+    var layer = e.target;
+    var properties = layer.feature.properties;
+    var parcelId = layer.feature.id;
     
-    var overlays = {
-        "GDAL Tiles": gdalTiles
-    };
+    // Show loading popup
+    var loadingContent = `
+        <div class="parcel-popup">
+            <div class="popup-header">Parcel Information</div>
+            <p class="loading">Loading raster classification...</p>
+        </div>
+    `;
+    layer.bindPopup(loadingContent).openPopup();
+    
+    // Fetch raster classification
+    fetch('/api/parcel/' + parcelId + '/raster-class')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                var errorContent = `
+                    <div class="parcel-popup">
+                        <div class="popup-header">Parcel Information</div>
+                        <p class="error">${data.error}</p>
+                    </div>
+                `;
+                layer.getPopup().setContent(errorContent);
+                return;
+            }
+            
+            // Build pixel breakdown HTML
+            var pixelBreakdownHTML = '<div class="pixel-breakdown"><strong>Raster Pixels:</strong><br>';
+            data.pixel_breakdown.forEach(item => {
+                pixelBreakdownHTML += `
+                    <div class="pixel-item">
+                        ${item.class_name}: ${item.pixel_count} pixels (${item.percentage}%)
+                    </div>
+                `;
+            });
+            pixelBreakdownHTML += '</div>';
+            
+            // Determine agreement status
+            var agreementHTML = data.agreement 
+                ? '<span class="agreement-match">✓ MATCH</span>'
+                : '<span class="agreement-mismatch">✗ MISMATCH</span>';
+            
+            // Build complete popup
+            var popupContent = `
+                <div class="parcel-popup">
+                    <div class="popup-header">Parcel #${parcelId}</div>
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Soil Code:</span>
+                        <span class="popup-value">${properties.COD_SUOLO || 'N/A'}</span>
+                    </div>
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Soil Type:</span>
+                        <span class="popup-value">${properties.DESC_SUOLO || 'N/A'}</span>
+                    </div>
+                    
+                    <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Vector Class:</span>
+                        <span class="popup-value">${data.vector_class}</span>
+                    </div>
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Raster Class:</span>
+                        <span class="popup-value">${data.raster_dominant_class}</span>
+                    </div>
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Agreement:</span>
+                        ${agreementHTML}
+                    </div>
+                    
+                    <div class="popup-row">
+                        <span class="popup-label">Purity:</span>
+                        <span class="popup-value">${data.purity}%</span>
+                    </div>
+                    
+                    ${pixelBreakdownHTML}
+                    
+                    <div style="margin-top: 8px; font-size: 10px; color: #999;">
+                        Total pixels: ${data.total_pixels}
+                    </div>
+                </div>
+            `;
+            
+            layer.getPopup().setContent(popupContent);
+        })
+        .catch(error => {
+            console.error('Error fetching raster class:', error);
+            var errorContent = `
+                <div class="parcel-popup">
+                    <div class="popup-header">Error</div>
+                    <p class="error">Failed to load raster classification</p>
+                </div>
+            `;
+            layer.getPopup().setContent(errorContent);
+        });
+}
 
-    L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
+// Bind events to each parcel
+function onEachParcel(feature, layer) {
+    layer.on({
+        mouseover: highlightParcel,
+        mouseout: resetHighlight,
+        click: onParcelClick
+    });
+}
 
-    // Info box
-    var info = L.control({position: 'topright'});
-    info.onAdd = function(map) {
-        this._div = L.DomUtil.create('div', 'info');
-        this._div.innerHTML = '<h4>GDAL Tiles Viewer</h4>Status: Loading tiles...';
-        return this._div;
-    };
-    info.addTo(map);
-
-    // Fit to overlay bounds (from your original file)
-    map.fitBounds([
-        [43.75133566504181, 13.569333095211608],  // SW
-        [45.61252406696319, 9.731163384609332]    // NE
-    ]);
-
-    // Debug: Log tile load errors
-    gdalTiles.on('tileerror', function(error, tile) {
-        console.error('Tile load error:', error);
+// Load parcels
+console.log('Loading parcels...');
+fetch('/api/parcels')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to load parcels');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Parcels loaded:', data.features.length, 'features');
+        
+        parcelsLayer = L.geoJSON(data, {
+            style: parcelStyle,
+            onEachFeature: onEachParcel
+        });
+        
+        // Add to map
+        parcelsLayer.addTo(map);
+        
+        // Fit map to parcels bounds
+        map.fitBounds(parcelsLayer.getBounds());
+        
+        console.log('Parcels displayed on map');
+    })
+    .catch(error => {
+        console.error('Error loading parcels:', error);
+        document.getElementById('panel-content').innerHTML = `
+            <p class="error">Failed to load parcels: ${error.message}</p>
+        `;
     });
 
-    gdalTiles.on('tileload', function() {
-        info._div.innerHTML = '<h4>GDAL Tiles Viewer</h4>Status: Tiles loaded successfully! ✓';
-    });
+// Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+}
+
+// Update viewport statistics
+function updateViewportStats() {
+    var zoom = map.getZoom();
+    
+    if (zoom < 12) {
+        document.getElementById('overall-accuracy').textContent = '--';
+        document.getElementById('panel-content').innerHTML = `
+            <p style="color: #F57C00; font-size: 12px;">
+                ⚠️ Zoom in to level 12 or higher to see statistics for the visible area.
+                <br><br>Current zoom: ${zoom}
+            </p>
+        `;
+        return;
+    }
+    
+    var bounds = map.getBounds();
+    var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+    
+    document.getElementById('panel-content').innerHTML = `
+        <p class="loading">⏳ Calculating statistics...</p>
+    `;
+    
+    fetch(`/api/analysis/viewport-stats?bbox=${bbox}&zoom=${zoom}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('overall-accuracy').textContent = '--';
+                document.getElementById('panel-content').innerHTML = `
+                    <p class="error">${data.error}</p>
+                `;
+                return;
+            }
+            
+            // Update overall accuracy
+            document.getElementById('overall-accuracy').textContent = data.overall_accuracy + '%';
+            
+            // Build statistics HTML
+            var html = `
+                <div style="margin-bottom: 15px;">
+                    <strong>Viewport Statistics:</strong><br>
+                    <div style="margin-top: 8px; font-size: 12px;">
+                        Parcels: <strong>${data.total_parcels}</strong><br>
+                        Pixels analyzed: <strong>${data.total_pixels.toLocaleString()}</strong><br>
+                        Correct: <strong>${data.correct_pixels.toLocaleString()}</strong><br>
+                        Errors: <strong>${(data.total_pixels - data.correct_pixels).toLocaleString()}</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <strong>Per-Class Accuracy:</strong>
+                </div>
+            `;
+            
+            // Add per-class metrics
+            for (const [className, metrics] of Object.entries(data.class_metrics)) {
+                var accuracyColor = metrics.producers_accuracy >= 95 ? '#2E7D32' : 
+                                   metrics.producers_accuracy >= 85 ? '#F57C00' : '#D32F2F';
+                
+                html += `
+                    <div style="margin: 8px 0; padding: 8px; background: #F5F5F5; border-radius: 4px; font-size: 11px;">
+                        <div style="font-weight: bold; color: #333;">${className}</div>
+                        <div style="margin-top: 3px;">
+                            Accuracy: <span style="color: ${accuracyColor}; font-weight: bold;">${metrics.producers_accuracy}%</span>
+                            (${metrics.correct_pixels}/${metrics.total_pixels} pixels)
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; border-radius: 4px; font-size: 11px;">
+                    <strong style="color: #2E7D32;">💡 Tip:</strong> Click on parcels to see individual classification details.
+                </div>
+            `;
+            
+            document.getElementById('panel-content').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error calculating stats:', error);
+            document.getElementById('overall-accuracy').textContent = '--';
+            document.getElementById('panel-content').innerHTML = `
+                <p class="error">Error calculating statistics: ${error.message}</p>
+            `;
+        });
+}
+
+// Debounced version - wait 500ms after user stops moving
+var debouncedUpdateStats = debounce(updateViewportStats, 500);
+
+// Attach to map events
+map.on('moveend', debouncedUpdateStats);
+map.on('zoomend', debouncedUpdateStats);
+
+// Layer control - tiles OFF by default
+var basemaps = {
+    "OpenStreetMap": osm,
+    "CartoDB Positron": cartodb
+};
+
+var overlays = {
+    "HRL Tiles (2021)": gdalTiles,  // Available but not active
+    "Parcels": parcelsLayer  // Will be added after loading
+};
+
+L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
+
+// Update layer control after parcels load
+setTimeout(function() {
+    if (parcelsLayer) {
+        // Recreate control with parcels layer
+        map.eachLayer(function(layer) {
+            if (layer instanceof L.Control.Layers) {
+                map.removeControl(layer);
+            }
+        });
+        
+        var updatedOverlays = {
+            "Parcels": parcelsLayer,
+            "HRL Tiles (2021)": gdalTiles
+        };
+        
+        L.control.layers(basemaps, updatedOverlays, {collapsed: false}).addTo(map);
+    }
+}, 2000);
+
+// Initial stats update (if zoom is sufficient)
+map.whenReady(function() {
+    setTimeout(function() {
+        if (map.getZoom() >= 12) {
+            updateViewportStats();
+        }
+    }, 3000);  // Wait for parcels to load
+});
+
 </script>
 
 </body>
