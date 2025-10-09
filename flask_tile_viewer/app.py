@@ -1,6 +1,7 @@
 from flask import Flask, render_template, send_from_directory, jsonify, request
 import os
 import json
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -75,22 +76,53 @@ def tiles(z, x, y):
 
 @app.route('/api/parcels')
 def get_parcels():
-    """Get all parcels as GeoJSON"""
+    """Get parcels in current viewport only"""
     try:
         import geopandas as gpd
         
-        gdf = gpd.read_file(GPKG_PATH)
+        # Get bbox from query params
+        bbox = request.args.get('bbox')
+        
+        if not bbox:
+            return jsonify({"error": "bbox parameter required. Use: /api/parcels?bbox=minx,miny,maxx,maxy"}), 400
+        
+        minx, miny, maxx, maxy = map(float, bbox.split(','))
+        
+        print(f"\n=== Loading Parcels ===")
+        print(f"BBox: {bbox}")
+        
+        # Read only parcels in bbox using spatial filter
+        gdf = gpd.read_file(GPKG_PATH, bbox=(minx, miny, maxx, maxy))
+        print(f"Loaded {len(gdf)} parcels in bbox")
+        
+        if len(gdf) == 0:
+            return jsonify({
+                "type": "FeatureCollection",
+                "features": []
+            })
+        
+        # Limit to reasonable number for display
+        if len(gdf) > 5000:
+            print(f"Too many parcels ({len(gdf)}), sampling 5000")
+            gdf = gdf.sample(5000)
         
         # Convert to WGS84 if needed
         if gdf.crs and gdf.crs.to_epsg() != 4326:
             gdf = gdf.to_crs(epsg=4326)
         
+        # Simplify geometries for faster display
+        gdf['geometry'] = gdf['geometry'].simplify(tolerance=0.0001, preserve_topology=True)
+        
         # Convert to GeoJSON
         geojson = json.loads(gdf.to_json())
+        print(f"Returning {len(geojson['features'])} features")
         
         return jsonify(geojson)
     
     except Exception as e:
+        print(f"ERROR in /api/parcels: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/parcel/<int:parcel_id>/raster-class')
@@ -199,8 +231,13 @@ def viewport_stats():
         
         minx, miny, maxx, maxy = map(float, bbox.split(','))
         
+        print(f"\n=== Viewport Stats Request ===")
+        print(f"BBox: {bbox}")
+        print(f"Zoom: {zoom}")
+        
         # Limit area size to prevent overload
         area = (maxx - minx) * (maxy - miny)
+        print(f"Area: {area} degrees²")
         if area > 0.1:  # ~100 km²
             return jsonify({
                 "error": "Area too large. Please zoom in further.",
@@ -208,29 +245,47 @@ def viewport_stats():
             })
         
         # Load parcels in bbox
+        print("Loading GeoPackage...")
         gdf = gpd.read_file(GPKG_PATH)
+        print(f"Total parcels in file: {len(gdf)}")
+        
+        # Filter by bbox
         gdf_filtered = gdf.cx[minx:maxx, miny:maxy]
+        print(f"Parcels in viewport: {len(gdf_filtered)}")
         
         if len(gdf_filtered) == 0:
             return jsonify({
-                "error": "No parcels found in this area"
+                "error": "No parcels found in this area",
+                "total_parcels": 0
             })
+        
+        # Limit to reasonable number for performance
+        if len(gdf_filtered) > 500:
+            print(f"Too many parcels, sampling 500")
+            gdf_filtered = gdf_filtered.sample(500)
         
         # Initialize confusion matrix
         matrix = {}
-        vector_classes = sorted(gdf_filtered['hrl_name'].unique())
+        vector_classes = sorted(gdf_filtered['hrl_name'].dropna().unique())
+        print(f"Vector classes found: {vector_classes}")
         
         with rasterio.open(GEOTIFF_PATH) as src:
+            print(f"Raster CRS: {src.crs}")
+            print(f"GDF CRS: {gdf_filtered.crs}")
+            
             # Ensure same CRS
             if gdf_filtered.crs != src.crs:
+                print("Converting CRS...")
                 gdf_filtered = gdf_filtered.to_crs(src.crs)
                 # Recalculate bbox in raster CRS
                 minx, miny, maxx, maxy = gdf_filtered.total_bounds
             
-            # Get all raster classes in area
+            # Get all raster classes in area (sample, not full read)
+            print("Sampling raster values...")
             window = from_bounds(minx, miny, maxx, maxy, src.transform)
             raster_data = src.read(1, window=window)
             raster_classes = sorted(np.unique(raster_data[raster_data != 0]))
+            print(f"Raster classes in area: {len(raster_classes)} unique values")
             
             # Initialize matrix
             for v_class in vector_classes:
@@ -240,13 +295,17 @@ def viewport_stats():
                     matrix[v_class][r_class] = 0
             
             # Process each parcel
+            processed = 0
             for idx, parcel in gdf_filtered.iterrows():
+                if pd.isna(parcel['hrl_name']):
+                    continue
+                    
                 vector_class = parcel['hrl_name']
                 geometry = [parcel.geometry.__geo_interface__]
                 
                 try:
                     # Extract pixels under parcel
-                    out_image, out_transform = mask(src, geometry, crop=True)
+                    out_image, out_transform = mask(src, geometry, crop=True, all_touched=False)
                     pixels = out_image[0]
                     pixels = pixels[pixels != 0]
                     
@@ -260,12 +319,26 @@ def viewport_stats():
                         raster_class = CROP_CLASS_MAP.get(int(raster_value), f'Unknown ({raster_value})')
                         if raster_class in matrix[vector_class]:
                             matrix[vector_class][raster_class] += int(count)
+                    
+                    processed += 1
                 
                 except Exception as e:
+                    print(f"Error processing parcel {idx}: {e}")
                     continue
+            
+            print(f"Successfully processed {processed} parcels")
         
         # Calculate metrics
         total_pixels = sum(sum(row.values()) for row in matrix.values())
+        print(f"Total pixels: {total_pixels}")
+        
+        if total_pixels == 0:
+            return jsonify({
+                "error": "No pixels extracted from parcels",
+                "total_parcels": len(gdf_filtered),
+                "processed_parcels": processed
+            })
+        
         correct_pixels = sum(
             matrix.get(cls, {}).get(cls, 0) 
             for cls in set(matrix.keys()) | set(
@@ -278,7 +351,11 @@ def viewport_stats():
         # Per-class metrics
         class_metrics = {}
         for cls in vector_classes:
+            if cls not in matrix:
+                continue
             vector_total = sum(matrix[cls].values())
+            if vector_total == 0:
+                continue
             correct = matrix[cls].get(cls, 0)
             
             producers_acc = (correct / vector_total * 100) if vector_total > 0 else 0
@@ -289,10 +366,14 @@ def viewport_stats():
                 'correct_pixels': correct
             }
         
+        print(f"Overall accuracy: {overall_accuracy:.1f}%")
+        print("=== Request Complete ===\n")
+        
         return jsonify({
             'bbox': bbox,
             'zoom': zoom,
             'total_parcels': len(gdf_filtered),
+            'processed_parcels': processed,
             'total_pixels': total_pixels,
             'correct_pixels': correct_pixels,
             'overall_accuracy': round(overall_accuracy, 1),
@@ -301,6 +382,9 @@ def viewport_stats():
         })
     
     except Exception as e:
+        print(f"\nERROR in viewport_stats: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/crop-classes')

@@ -365,37 +365,61 @@ function onEachParcel(feature, layer) {
     });
 }
 
-// Load parcels
-console.log('Loading parcels...');
-fetch('/api/parcels')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to load parcels');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Parcels loaded:', data.features.length, 'features');
-        
-        parcelsLayer = L.geoJSON(data, {
-            style: parcelStyle,
-            onEachFeature: onEachParcel
+// Load parcels for current map view
+function loadParcels() {
+    var bounds = map.getBounds();
+    var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+    
+    console.log('Loading parcels for bbox:', bbox);
+    
+    fetch(`/api/parcels?bbox=${bbox}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load parcels');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Parcels loaded:', data.features.length, 'features');
+            
+            // Remove old layer if exists
+            if (parcelsLayer) {
+                map.removeLayer(parcelsLayer);
+            }
+            
+            if (data.features.length === 0) {
+                console.log('No parcels in this area');
+                return;
+            }
+            
+            parcelsLayer = L.geoJSON(data, {
+                style: parcelStyle,
+                onEachFeature: onEachParcel
+            });
+            
+            // Add to map
+            parcelsLayer.addTo(map);
+            
+            console.log('Parcels displayed on map');
+        })
+        .catch(error => {
+            console.error('Error loading parcels:', error);
+            document.getElementById('panel-content').innerHTML = `
+                <p class="error">Failed to load parcels: ${error.message}</p>
+            `;
         });
-        
-        // Add to map
-        parcelsLayer.addTo(map);
-        
-        // Fit map to parcels bounds
-        map.fitBounds(parcelsLayer.getBounds());
-        
-        console.log('Parcels displayed on map');
-    })
-    .catch(error => {
-        console.error('Error loading parcels:', error);
-        document.getElementById('panel-content').innerHTML = `
-            <p class="error">Failed to load parcels: ${error.message}</p>
-        `;
-    });
+}
+
+// Debounced parcel loading
+var debouncedLoadParcels = debounce(loadParcels, 800);
+
+// Load parcels when map moves
+map.on('moveend', debouncedLoadParcels);
+
+// Initial load
+map.whenReady(function() {
+    setTimeout(loadParcels, 1000);
+});
 
 // Debounce function
 function debounce(func, wait) {
@@ -506,30 +530,10 @@ var basemaps = {
 };
 
 var overlays = {
-    "HRL Tiles (2021)": gdalTiles,  // Available but not active
-    "Parcels": parcelsLayer  // Will be added after loading
+    "HRL Tiles (2021)": gdalTiles
 };
 
-L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
-
-// Update layer control after parcels load
-setTimeout(function() {
-    if (parcelsLayer) {
-        // Recreate control with parcels layer
-        map.eachLayer(function(layer) {
-            if (layer instanceof L.Control.Layers) {
-                map.removeControl(layer);
-            }
-        });
-        
-        var updatedOverlays = {
-            "Parcels": parcelsLayer,
-            "HRL Tiles (2021)": gdalTiles
-        };
-        
-        L.control.layers(basemaps, updatedOverlays, {collapsed: false}).addTo(map);
-    }
-}, 2000);
+var layerControl = L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
 
 // Initial stats update (if zoom is sufficient)
 map.whenReady(function() {
