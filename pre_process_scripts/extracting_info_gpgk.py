@@ -1,5 +1,7 @@
 import geopandas as gpd
 
+import pandas
+
 gdf = gpd.read_file("downloaded_data/parcels_with_HRL_codes.gpkg")
 
 col = gdf.columns
