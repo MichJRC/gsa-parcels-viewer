@@ -1,5 +1,7 @@
 {
     "python.REPL.enableREPLSmartSend": false,
     "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "python.defaultInterpreterPath": "/usr/local/bin/python3.11",
+    "python.terminal.activateEnvironment": true
 }

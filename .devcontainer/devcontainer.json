@@ -2,6 +2,7 @@
   "name": "GSA Parcels Viewer Environment",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "postCreateCommand": "sudo apt-get update && sudo apt-get install -y gdal-bin && pip install -r requirements.txt && pip install jupyter-server && python -m ipykernel install --user && chmod +x setup.sh && ./setup.sh",
+  "postStartCommand": "python -m ipykernel install --user",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -10,14 +11,8 @@
         "ms-python.vscode-pylance"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.terminal.activateEnvironment": true,
-        "jupyter.kernels.filter": [
-          {
-            "path": "/usr/local/bin/python",
-            "type": "pythonEnvironment"
-          }
-        ]
+        "python.defaultInterpreterPath": "/usr/local/bin/python3.11",
+        "python.terminal.activateEnvironment": true
       }
     }
   },
