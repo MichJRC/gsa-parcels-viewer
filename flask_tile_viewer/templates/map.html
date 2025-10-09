@@ -434,11 +434,11 @@ function debounce(func, wait) {
 function updateViewportStats() {
     var zoom = map.getZoom();
     
-    if (zoom < 12) {
+    if (zoom < 14) {
         document.getElementById('overall-accuracy').textContent = '--';
         document.getElementById('panel-content').innerHTML = `
             <p style="color: #F57C00; font-size: 12px;">
-                ⚠️ Zoom in to level 12 or higher to see statistics for the visible area.
+                ⚠️ Zoom in to level 14 or higher to see statistics for the visible area.
                 <br><br>Current zoom: ${zoom}
             </p>
         `;
@@ -455,6 +455,14 @@ function updateViewportStats() {
     fetch(`/api/analysis/viewport-stats?bbox=${bbox}&zoom=${zoom}`)
         .then(response => response.json())
         .then(data => {
+            if (data.message) {
+                document.getElementById('overall-accuracy').textContent = '--';
+                document.getElementById('panel-content').innerHTML = `
+                    <p style="color: #F57C00; font-size: 12px;">${data.message}</p>
+                `;
+                return;
+            }
+            
             if (data.error) {
                 document.getElementById('overall-accuracy').textContent = '--';
                 document.getElementById('panel-content').innerHTML = `
@@ -472,7 +480,8 @@ function updateViewportStats() {
                     <strong>Viewport Statistics:</strong><br>
                     <div style="margin-top: 8px; font-size: 12px;">
                         Parcels: <strong>${data.total_parcels}</strong><br>
-                        Pixels analyzed: <strong>${data.total_pixels.toLocaleString()}</strong><br>
+                        Analyzed: <strong>${data.processed_parcels}</strong><br>
+                        Pixels: <strong>${data.total_pixels.toLocaleString()}</strong><br>
                         Correct: <strong>${data.correct_pixels.toLocaleString()}</strong><br>
                         Errors: <strong>${(data.total_pixels - data.correct_pixels).toLocaleString()}</strong>
                     </div>
