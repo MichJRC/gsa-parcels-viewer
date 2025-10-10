@@ -415,23 +415,26 @@ def crop_classes():
     return jsonify(CROP_CLASS_MAP)
 
 if __name__ == '__main__':
-       # Check paths
-       if not os.path.exists(GPKG_PATH):
-           print(f"ERROR: GeoPackage not found: {GPKG_PATH}")
-           exit(1)
-       
-       # Only load in child process (not reloader parent)
-       if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-           load_parcels()
-           
-           print("🚀 STARTING WEB SERVER")
-           print("="*60)
-           print(f"✓ Ready to serve {len(gdf_global):,} parcels")
-           print("  Endpoints:")
-           print("    - http://localhost:5000/")
-           print("    - http://localhost:5000/api/parcels?bbox=...")
-           print("    - http://localhost:5000/api/parcel/<id>/raster-class")
-           print("    - http://localhost:5000/api/analysis/viewport-stats")
-           print("="*60 + "\n")
-       
-       app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    # Check paths
+    if not os.path.exists(GPKG_PATH):
+        print(f"ERROR: GeoPackage not found: {GPKG_PATH}")
+        exit(1)
+    
+    # Only load data in the child process (not the reloader parent)
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        # This is the actual server process
+        load_parcels()
+        
+        print("🚀 STARTING WEB SERVER")
+        print("="*60)
+        print(f"✓ Ready to serve {len(gdf_global):,} parcels")
+        print("  Endpoints:")
+        print("    - http://localhost:5000/")
+        print("    - http://localhost:5000/api/parcels?bbox=...")
+        print("    - http://localhost:5000/api/parcel/<id>/raster-class")
+        print("    - http://localhost:5000/api/analysis/viewport-stats")
+        print("="*60 + "\n")
+    
+    # app.run() should be OUTSIDE the if statement!
+    # It needs to run in both parent and child processes
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
