@@ -177,12 +177,14 @@ var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{
 });
 
 // GDAL tiles - HIDDEN by default
+// Allow upscaling beyond native zoom for visual reference
 var gdalTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     tms: true,
     opacity: 0.7,
     attribution: 'HRL Tiles',
     minZoom: 10,
-    maxZoom: 14
+    maxZoom: 14,           // Tiles only exist up to zoom 14
+    maxNativeZoom: 14      // But display them at higher zooms (upscaled)
 });
 
 // Initialize map (tiles NOT added to initial layers)
