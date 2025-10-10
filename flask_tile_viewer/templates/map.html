@@ -432,6 +432,214 @@ function debounce(func, wait) {
     };
 }
 
+// Add this function to your map.html (in the <script> section)
+// Place it BEFORE the updateViewportStats() function
+
+function buildConfusionMatrixTable(data) {
+    if (!data.confusion_matrix || Object.keys(data.confusion_matrix).length === 0) {
+        return '<p style="color: #999; font-size: 12px;">No confusion matrix data available</p>';
+    }
+    
+    const matrix = data.confusion_matrix;
+    const vectorClasses = Object.keys(matrix).sort();
+    
+    // Get all raster classes that appear in the matrix
+    const rasterClassesSet = new Set();
+    vectorClasses.forEach(vClass => {
+        Object.keys(matrix[vClass]).forEach(rClass => {
+            rasterClassesSet.add(rClass);
+        });
+    });
+    const rasterClasses = Array.from(rasterClassesSet).sort();
+    
+    // Calculate max value for heat map scaling
+    let maxValue = 0;
+    vectorClasses.forEach(vClass => {
+        Object.values(matrix[vClass]).forEach(count => {
+            maxValue = Math.max(maxValue, count);
+        });
+    });
+    
+    // Build table HTML
+    let html = '<div class="confusion-matrix-container" style="margin-top: 15px; overflow-x: auto;">';
+    html += '<h3 style="font-size: 13px; margin-bottom: 8px;">📊 Confusion Matrix</h3>';
+    html += '<div style="font-size: 10px; color: #666; margin-bottom: 8px;">';
+    html += '<strong>Rows:</strong> Farmer Declaration | <strong>Cols:</strong> Satellite Classification';
+    html += '</div>';
+    
+    html += '<table class="confusion-matrix-table" style="width: 100%; border-collapse: collapse; font-size: 10px; background: white;">';
+    
+    // Header row
+    html += '<thead><tr>';
+    html += '<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white; text-align: left;">Farmer \\ Satellite</th>';
+    rasterClasses.forEach(rClass => {
+        const shortName = rClass.length > 12 ? rClass.substring(0, 10) + '..' : rClass;
+        html += `<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white; text-align: center;" title="${rClass}">${shortName}</th>`;
+    });
+    html += '<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white;">Total</th>';
+    html += '<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white;">Acc.</th>';
+    html += '</tr></thead>';
+    
+    // Data rows
+    html += '<tbody>';
+    vectorClasses.forEach(vClass => {
+        html += '<tr>';
+        
+        // Row header (vector class)
+        const shortVName = vClass.length > 15 ? vClass.substring(0, 13) + '..' : vClass;
+        html += `<th style="padding: 6px 4px; border: 1px solid #ddd; background: #9C27B0; color: white; text-align: left;" title="${vClass}">${shortVName}</th>`;
+        
+        // Calculate row total
+        const rowTotal = Object.values(matrix[vClass]).reduce((a, b) => a + b, 0);
+        
+        // Data cells
+        rasterClasses.forEach(rClass => {
+            const count = matrix[vClass][rClass] || 0;
+            const isDiagonal = (vClass === rClass);
+            
+            let cellStyle = 'padding: 6px 4px; border: 1px solid #ddd; text-align: center;';
+            let displayValue = count > 0 ? count.toLocaleString() : '-';
+            
+            if (count === 0) {
+                cellStyle += ' background: #F5F5F5; color: #999;';
+            } else if (isDiagonal) {
+                cellStyle += ' background: #C8E6C9; font-weight: bold; color: #2E7D32;';
+            } else {
+                // Error cell - apply heat map
+                const errorPercent = (count / maxValue) * 100;
+                if (errorPercent < 10) {
+                    cellStyle += ' background: #FFF9C4;';
+                } else if (errorPercent < 30) {
+                    cellStyle += ' background: #FFE082;';
+                } else {
+                    cellStyle += ' background: #FFCDD2; font-weight: bold;';
+                }
+            }
+            
+            const percentage = rowTotal > 0 ? ((count / rowTotal) * 100).toFixed(1) : '0.0';
+            const title = `${vClass} → ${rClass}: ${count} pixels (${percentage}%)`;
+            
+            html += `<td style="${cellStyle}" title="${title}">${displayValue}</td>`;
+        });
+        
+        // Row total
+        html += `<td style="padding: 6px 4px; border: 1px solid #ddd; background: #E1BEE7; font-weight: bold; text-align: center;">${rowTotal.toLocaleString()}</td>`;
+        
+        // Row accuracy (Producer's accuracy)
+        const classMetrics = data.class_metrics[vClass];
+        if (classMetrics) {
+            const acc = classMetrics.producers_accuracy;
+            let badgeStyle = 'display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;';
+            if (acc >= 85) {
+                badgeStyle += ' background: #C8E6C9; color: #2E7D32;';
+            } else if (acc >= 70) {
+                badgeStyle += ' background: #FFF9C4; color: #F57C00;';
+            } else {
+                badgeStyle += ' background: #FFCDD2; color: #C62828;';
+            }
+            
+            html += `<td style="padding: 6px 4px; border: 1px solid #ddd; text-align: center;"><span style="${badgeStyle}">${acc}%</span></td>`;
+        } else {
+            html += '<td style="padding: 6px 4px; border: 1px solid #ddd;">-</td>';
+        }
+        
+        html += '</tr>';
+    });
+    html += '</tbody>';
+    
+    html += '</table>';
+    
+    // Legend
+    html += '<div style="margin-top: 10px; padding: 8px; background: #F5F5F5; border-radius: 4px; font-size: 10px;">';
+    html += '<strong>Legend:</strong> ';
+    html += '<span style="display: inline-block; margin-right: 10px;"><span style="display: inline-block; width: 15px; height: 15px; background: #C8E6C9; border: 1px solid #999; margin-right: 4px; vertical-align: middle;"></span>Correct</span>';
+    html += '<span style="display: inline-block; margin-right: 10px;"><span style="display: inline-block; width: 15px; height: 15px; background: #FFF9C4; border: 1px solid #999; margin-right: 4px; vertical-align: middle;"></span>Low Error</span>';
+    html += '<span style="display: inline-block; margin-right: 10px;"><span style="display: inline-block; width: 15px; height: 15px; background: #FFE082; border: 1px solid #999; margin-right: 4px; vertical-align: middle;"></span>Med Error</span>';
+    html += '<span style="display: inline-block; margin-right: 10px;"><span style="display: inline-block; width: 15px; height: 15px; background: #FFCDD2; border: 1px solid #999; margin-right: 4px; vertical-align: middle;"></span>High Error</span>';
+    html += '</div>';
+    
+    html += '</div>';
+    
+    return html;
+}
+
+function updateViewportStats() {
+    var zoom = map.getZoom();
+    
+    if (zoom < 14) {
+        document.getElementById('overall-accuracy').textContent = '--';
+        document.getElementById('panel-content').innerHTML = `
+            <p style="color: #F57C00; font-size: 12px;">
+                ⚠️ Zoom in to level 14 or higher to see statistics.
+                <br><br>Current zoom: ${zoom}
+            </p>
+        `;
+        return;
+    }
+    
+    var bounds = map.getBounds();
+    var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+    
+    document.getElementById('panel-content').innerHTML = `
+        <p style="color: #F57C00; font-style: italic;">⏳ Calculating statistics...</p>
+    `;
+    
+    fetch(`/api/analysis/viewport-stats?bbox=${bbox}&zoom=${zoom}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.message || data.error) {
+                document.getElementById('overall-accuracy').textContent = '--';
+                document.getElementById('panel-content').innerHTML = `
+                    <p style="color: #F57C00; font-size: 12px;">${data.message || data.error}</p>
+                `;
+                return;
+            }
+            
+            // Update overall accuracy
+            document.getElementById('overall-accuracy').textContent = data.overall_accuracy + '%';
+            
+            // Build statistics HTML
+            var html = `
+                <div style="margin-bottom: 15px;">
+                    <strong>Viewport Statistics:</strong><br>
+                    <div style="margin-top: 8px; font-size: 12px;">
+                        Parcels: <strong>${data.total_parcels}</strong><br>
+                        Analyzed: <strong>${data.processed_parcels}</strong><br>
+                        Pixels: <strong>${data.total_pixels.toLocaleString()}</strong><br>
+                        Correct: <strong style="color: #2E7D32;">${data.correct_pixels.toLocaleString()}</strong><br>
+                        Errors: <strong style="color: #D32F2F;">${(data.total_pixels - data.correct_pixels).toLocaleString()}</strong>
+                    </div>
+                </div>
+            `;
+            
+            // ADD THE CONFUSION MATRIX TABLE HERE
+            html += buildConfusionMatrixTable(data);
+            
+            // Add interpretation guide
+            html += `
+                <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; border-radius: 4px; font-size: 11px;">
+                    <strong style="color: #2E7D32;">💡 How to Read:</strong>
+                    <ul style="margin: 5px 0 0 20px; padding: 0;">
+                        <li><strong>Green diagonal:</strong> Correct matches</li>
+                        <li><strong>Off-diagonal:</strong> Misclassifications</li>
+                        <li><strong>0% accuracy:</strong> No pixels matched the farmer's declaration</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('panel-content').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('overall-accuracy').textContent = '--';
+            document.getElementById('panel-content').innerHTML = `
+                <p style="color: #D32F2F; background: #FFEBEE; padding: 8px; border-radius: 4px; font-size: 12px;">
+                    Error: ${error.message}
+                </p>
+            `;
+        });
+}
+
 // Update viewport statistics
 function updateViewportStats() {
     var zoom = map.getZoom();
@@ -493,6 +701,12 @@ function updateViewportStats() {
                     <strong>Per-Class Accuracy:</strong>
                 </div>
             `;
+
+            html += buildConfusionMatrixTable(data);
+
+            html += `<div style="margin-top: 15px; margin-bottom: 10px;">
+                <strong>Per-Class Summary:</strong>
+            </div>`;
             
             // Add per-class metrics
             for (const [className, metrics] of Object.entries(data.class_metrics)) {
