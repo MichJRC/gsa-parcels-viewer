@@ -415,14 +415,24 @@ def crop_classes():
     return jsonify(CROP_CLASS_MAP)
 
 if __name__ == '__main__':
+    # Check paths
     if not os.path.exists(GPKG_PATH):
         print(f"ERROR: GeoPackage not found: {GPKG_PATH}")
         exit(1)
     
-    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-        load_parcels()
-        print("🚀 STARTING WEB SERVER")
-        # ... your print statements ...
+    # Load data once
+    load_parcels()
     
-    # This line MUST be at the same indentation as the if statement above
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    print("🚀 STARTING WEB SERVER")
+    print("="*60)
+    print(f"✓ Ready to serve {len(gdf_global):,} parcels")
+    print("  Endpoints:")
+    print("    - http://localhost:5000/")
+    print("    - http://localhost:5000/api/parcels?bbox=...")
+    print("    - http://localhost:5000/api/parcel/<id>/raster-class")
+    print("    - http://localhost:5000/api/analysis/viewport-stats")
+    print("="*60 + "\n")
+    
+    # Disable reloader to avoid issues
+    # You'll need to manually restart after code changes
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
