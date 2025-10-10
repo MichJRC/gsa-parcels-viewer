@@ -229,6 +229,7 @@ def get_parcel_raster_class(parcel_id):
 def viewport_stats():
     """Calculate confusion matrix for viewport"""
     try:
+        import geopandas as gpd
         import rasterio
         from rasterio.mask import mask
         import numpy as np
