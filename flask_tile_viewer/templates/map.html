@@ -21,19 +21,42 @@
             bottom: 0; 
             width: 100%; 
         }
+        
+        /* Draggable & Resizable Panel */
         .info-panel {
             position: absolute;
             top: 10px;
             right: 10px;
             width: 350px;
+            min-width: 250px;
+            max-width: 90vw;
+            min-height: 200px;
             max-height: 90vh;
-            overflow-y: auto;
-            background: white;
+            overflow: auto;
             background: rgba(255,255,255,0.95);
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
             border-radius: 8px;
             z-index: 1000;
+            resize: both;  /* Enables resizing */
         }
+        
+        /* Make panel slightly transparent when dragging */
+        .info-panel.dragging {
+            opacity: 0.8;
+            cursor: move;
+        }
+        
+        /* Resize indicator */
+        .info-panel::after {
+            content: '⋰';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            font-size: 16px;
+            color: #999;
+            pointer-events: none;
+        }
+        
         .info-header {
             background: #7B1FA2;
             color: white;
@@ -41,7 +64,10 @@
             border-radius: 8px 8px 0 0;
             font-size: 16px;
             font-weight: bold;
+            cursor: move;  /* Show it's draggable */
+            user-select: none;  /* Prevent text selection while dragging */
         }
+        
         .info-content {
             padding: 15px;
         }
@@ -144,8 +170,8 @@
 
 <!-- Statistics Panel -->
 <div class="info-panel" id="stats-panel">
-    <div class="info-header">
-        📊 Analysis Panel
+    <div class="info-header" id="panel-header">
+        📊 Analysis Panel (drag to move)
     </div>
     <div class="info-content">
         <div class="stat-box">
@@ -156,7 +182,7 @@
         <div id="panel-content">
             <p style="color: #666; font-size: 12px;">
                 Click on a parcel to see detailed information.<br><br>
-                Zoom in (level 12+) and the statistics will calculate automatically for the visible area.
+                Zoom in (level 14+) and the statistics will calculate automatically for the visible area.
             </p>
         </div>
     </div>
@@ -176,30 +202,29 @@ var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{
     maxZoom: 18
 });
 
-// GDAL tiles - HIDDEN by default
-// Allow upscaling beyond native zoom for visual reference
+// GDAL tiles - Extended to zoom 18
 var gdalTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
     tms: true,
     opacity: 0.7,
-    attribution: 'HRL Tiles',
+    attribution: 'HRL Raster 2021',
     minZoom: 10,
-    maxZoom: 18,           // Tiles only exist up to zoom 14
-    maxNativeZoom: 14      // But display them at higher zooms (upscaled)
+    maxZoom: 18,
+    maxNativeZoom: 14
 });
 
-// Initialize map (tiles NOT added to initial layers)
+// Initialize map
 var map = L.map('map', {
     center: [44.6819298660025, 11.65024823991047],
     zoom: 12,
     minZoom: 10,
     maxZoom: 18,
-    layers: [osm]  // Only base layer initially
+    layers: [osm]
 });
 
 // Parcels layer
 var parcelsLayer;
 
-// Color mapping function (from vector class name to color)
+// Color mapping function
 function getParcelColor(className) {
     const colorMap = {
         'Wheat': '#FFEB3B',
@@ -253,13 +278,12 @@ function resetHighlight(e) {
     parcelsLayer.resetStyle(e.target);
 }
 
-// Click handler - fetch raster class and show popup
+// Click handler
 function onParcelClick(e) {
     var layer = e.target;
     var properties = layer.feature.properties;
     var parcelId = layer.feature.id;
     
-    // Show loading popup
     var loadingContent = `
         <div class="parcel-popup">
             <div class="popup-header">Parcel Information</div>
@@ -268,7 +292,6 @@ function onParcelClick(e) {
     `;
     layer.bindPopup(loadingContent).openPopup();
     
-    // Fetch raster classification
     fetch('/api/parcel/' + parcelId + '/raster-class')
         .then(response => response.json())
         .then(data => {
@@ -283,7 +306,6 @@ function onParcelClick(e) {
                 return;
             }
             
-            // Build pixel breakdown HTML
             var pixelBreakdownHTML = '<div class="pixel-breakdown"><strong>Raster Pixels:</strong><br>';
             data.pixel_breakdown.forEach(item => {
                 pixelBreakdownHTML += `
@@ -294,12 +316,10 @@ function onParcelClick(e) {
             });
             pixelBreakdownHTML += '</div>';
             
-            // Determine agreement status
             var agreementHTML = data.agreement 
                 ? '<span class="agreement-match">✓ MATCH</span>'
                 : '<span class="agreement-mismatch">✗ MISMATCH</span>';
             
-            // Build complete popup
             var popupContent = `
                 <div class="parcel-popup">
                     <div class="popup-header">Parcel #${parcelId}</div>
@@ -358,7 +378,7 @@ function onParcelClick(e) {
         });
 }
 
-// Bind events to each parcel
+// Bind events
 function onEachParcel(feature, layer) {
     layer.on({
         mouseover: highlightParcel,
@@ -367,7 +387,7 @@ function onEachParcel(feature, layer) {
     });
 }
 
-// Load parcels for current map view
+// Load parcels
 function loadParcels() {
     var bounds = map.getBounds();
     var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
@@ -384,7 +404,6 @@ function loadParcels() {
         .then(data => {
             console.log('Parcels loaded:', data.features.length, 'features');
             
-            // Remove old layer if exists
             if (parcelsLayer) {
                 map.removeLayer(parcelsLayer);
             }
@@ -399,29 +418,14 @@ function loadParcels() {
                 onEachFeature: onEachParcel
             });
             
-            // Add to map
             parcelsLayer.addTo(map);
             
             console.log('Parcels displayed on map');
         })
         .catch(error => {
             console.error('Error loading parcels:', error);
-            document.getElementById('panel-content').innerHTML = `
-                <p class="error">Failed to load parcels: ${error.message}</p>
-            `;
         });
 }
-
-// Debounced parcel loading
-var debouncedLoadParcels = debounce(loadParcels, 800);
-
-// Load parcels when map moves
-map.on('moveend', debouncedLoadParcels);
-
-// Initial load
-map.whenReady(function() {
-    setTimeout(loadParcels, 1000);
-});
 
 // Debounce function
 function debounce(func, wait) {
@@ -432,9 +436,73 @@ function debounce(func, wait) {
     };
 }
 
-// Add this function to your map.html (in the <script> section)
-// Place it BEFORE the updateViewportStats() function
+var debouncedLoadParcels = debounce(loadParcels, 800);
 
+map.on('moveend', debouncedLoadParcels);
+
+map.whenReady(function() {
+    setTimeout(loadParcels, 1000);
+});
+
+// Make panel draggable
+(function() {
+    var panel = document.getElementById('stats-panel');
+    var header = document.getElementById('panel-header');
+    
+    var isDragging = false;
+    var currentX;
+    var currentY;
+    var initialX;
+    var initialY;
+    var xOffset = 0;
+    var yOffset = 0;
+    
+    header.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+    
+    function dragStart(e) {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+        
+        isDragging = true;
+        panel.classList.add('dragging');
+    }
+    
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            xOffset = currentX;
+            yOffset = currentY;
+            
+            // Keep panel within viewport
+            var maxX = window.innerWidth - panel.offsetWidth;
+            var maxY = window.innerHeight - panel.offsetHeight;
+            
+            currentX = Math.max(0, Math.min(currentX, maxX));
+            currentY = Math.max(0, Math.min(currentY, maxY));
+            
+            panel.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            panel.style.right = 'auto';
+            panel.style.left = '10px';
+            panel.style.top = '10px';
+        }
+    }
+    
+    function dragEnd(e) {
+        initialX = currentX;
+        initialY = currentY;
+        
+        isDragging = false;
+        panel.classList.remove('dragging');
+    }
+})();
+
+// Build confusion matrix table
 function buildConfusionMatrixTable(data) {
     if (!data.confusion_matrix || Object.keys(data.confusion_matrix).length === 0) {
         return '<p style="color: #999; font-size: 12px;">No confusion matrix data available</p>';
@@ -443,7 +511,6 @@ function buildConfusionMatrixTable(data) {
     const matrix = data.confusion_matrix;
     const vectorClasses = Object.keys(matrix).sort();
     
-    // Get all raster classes that appear in the matrix
     const rasterClassesSet = new Set();
     vectorClasses.forEach(vClass => {
         Object.keys(matrix[vClass]).forEach(rClass => {
@@ -452,7 +519,6 @@ function buildConfusionMatrixTable(data) {
     });
     const rasterClasses = Array.from(rasterClassesSet).sort();
     
-    // Calculate max value for heat map scaling
     let maxValue = 0;
     vectorClasses.forEach(vClass => {
         Object.values(matrix[vClass]).forEach(count => {
@@ -460,16 +526,14 @@ function buildConfusionMatrixTable(data) {
         });
     });
     
-    // Build table HTML
     let html = '<div class="confusion-matrix-container" style="margin-top: 15px; overflow-x: auto;">';
     html += '<h3 style="font-size: 13px; margin-bottom: 8px;">📊 Confusion Matrix</h3>';
     html += '<div style="font-size: 10px; color: #666; margin-bottom: 8px;">';
     html += '<strong>Rows:</strong> Farmer Declaration | <strong>Cols:</strong> Satellite Classification';
     html += '</div>';
     
-    html += '<table class="confusion-matrix-table" style="width: 100%; border-collapse: collapse; font-size: 10px; background: white;">';
+    html += '<table style="width: 100%; border-collapse: collapse; font-size: 10px; background: white;">';
     
-    // Header row
     html += '<thead><tr>';
     html += '<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white; text-align: left;">Farmer \\ Satellite</th>';
     rasterClasses.forEach(rClass => {
@@ -480,19 +544,15 @@ function buildConfusionMatrixTable(data) {
     html += '<th style="padding: 6px 4px; border: 1px solid #ddd; background: #7B1FA2; color: white;">Acc.</th>';
     html += '</tr></thead>';
     
-    // Data rows
     html += '<tbody>';
     vectorClasses.forEach(vClass => {
         html += '<tr>';
         
-        // Row header (vector class)
         const shortVName = vClass.length > 15 ? vClass.substring(0, 13) + '..' : vClass;
         html += `<th style="padding: 6px 4px; border: 1px solid #ddd; background: #9C27B0; color: white; text-align: left;" title="${vClass}">${shortVName}</th>`;
         
-        // Calculate row total
         const rowTotal = Object.values(matrix[vClass]).reduce((a, b) => a + b, 0);
         
-        // Data cells
         rasterClasses.forEach(rClass => {
             const count = matrix[vClass][rClass] || 0;
             const isDiagonal = (vClass === rClass);
@@ -505,7 +565,6 @@ function buildConfusionMatrixTable(data) {
             } else if (isDiagonal) {
                 cellStyle += ' background: #C8E6C9; font-weight: bold; color: #2E7D32;';
             } else {
-                // Error cell - apply heat map
                 const errorPercent = (count / maxValue) * 100;
                 if (errorPercent < 10) {
                     cellStyle += ' background: #FFF9C4;';
@@ -522,10 +581,8 @@ function buildConfusionMatrixTable(data) {
             html += `<td style="${cellStyle}" title="${title}">${displayValue}</td>`;
         });
         
-        // Row total
         html += `<td style="padding: 6px 4px; border: 1px solid #ddd; background: #E1BEE7; font-weight: bold; text-align: center;">${rowTotal.toLocaleString()}</td>`;
         
-        // Row accuracy (Producer's accuracy)
         const classMetrics = data.class_metrics[vClass];
         if (classMetrics) {
             const acc = classMetrics.producers_accuracy;
@@ -549,7 +606,6 @@ function buildConfusionMatrixTable(data) {
     
     html += '</table>';
     
-    // Legend
     html += '<div style="margin-top: 10px; padding: 8px; background: #F5F5F5; border-radius: 4px; font-size: 10px;">';
     html += '<strong>Legend:</strong> ';
     html += '<span style="display: inline-block; margin-right: 10px;"><span style="display: inline-block; width: 15px; height: 15px; background: #C8E6C9; border: 1px solid #999; margin-right: 4px; vertical-align: middle;"></span>Correct</span>';
@@ -563,6 +619,7 @@ function buildConfusionMatrixTable(data) {
     return html;
 }
 
+// Update viewport statistics
 function updateViewportStats() {
     var zoom = map.getZoom();
     
@@ -581,7 +638,7 @@ function updateViewportStats() {
     var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
     
     document.getElementById('panel-content').innerHTML = `
-        <p style="color: #F57C00; font-style: italic;">⏳ Calculating statistics...</p>
+        <p class="loading">⏳ Calculating statistics...</p>
     `;
     
     fetch(`/api/analysis/viewport-stats?bbox=${bbox}&zoom=${zoom}`)
@@ -595,10 +652,8 @@ function updateViewportStats() {
                 return;
             }
             
-            // Update overall accuracy
             document.getElementById('overall-accuracy').textContent = data.overall_accuracy + '%';
             
-            // Build statistics HTML
             var html = `
                 <div style="margin-bottom: 15px;">
                     <strong>Viewport Statistics:</strong><br>
@@ -612,17 +667,16 @@ function updateViewportStats() {
                 </div>
             `;
             
-            // ADD THE CONFUSION MATRIX TABLE HERE
             html += buildConfusionMatrixTable(data);
             
-            // Add interpretation guide
             html += `
                 <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; border-radius: 4px; font-size: 11px;">
-                    <strong style="color: #2E7D32;">💡 How to Read:</strong>
+                    <strong style="color: #2E7D32;">💡 How to Use:</strong>
                     <ul style="margin: 5px 0 0 20px; padding: 0;">
+                        <li><strong>Drag header</strong> to move panel anywhere</li>
+                        <li><strong>Drag corner (⋰)</strong> to resize</li>
                         <li><strong>Green diagonal:</strong> Correct matches</li>
                         <li><strong>Off-diagonal:</strong> Misclassifications</li>
-                        <li><strong>0% accuracy:</strong> No pixels matched the farmer's declaration</li>
                     </ul>
                 </div>
             `;
@@ -633,123 +687,17 @@ function updateViewportStats() {
             console.error('Error:', error);
             document.getElementById('overall-accuracy').textContent = '--';
             document.getElementById('panel-content').innerHTML = `
-                <p style="color: #D32F2F; background: #FFEBEE; padding: 8px; border-radius: 4px; font-size: 12px;">
-                    Error: ${error.message}
-                </p>
+                <p class="error">Error: ${error.message}</p>
             `;
         });
 }
 
-// Update viewport statistics
-function updateViewportStats() {
-    var zoom = map.getZoom();
-    
-    if (zoom < 14) {
-        document.getElementById('overall-accuracy').textContent = '--';
-        document.getElementById('panel-content').innerHTML = `
-            <p style="color: #F57C00; font-size: 12px;">
-                ⚠️ Zoom in to level 14 or higher to see statistics for the visible area.
-                <br><br>Current zoom: ${zoom}
-            </p>
-        `;
-        return;
-    }
-    
-    var bounds = map.getBounds();
-    var bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
-    
-    document.getElementById('panel-content').innerHTML = `
-        <p class="loading">⏳ Calculating statistics...</p>
-    `;
-    
-    fetch(`/api/analysis/viewport-stats?bbox=${bbox}&zoom=${zoom}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                document.getElementById('overall-accuracy').textContent = '--';
-                document.getElementById('panel-content').innerHTML = `
-                    <p style="color: #F57C00; font-size: 12px;">${data.message}</p>
-                `;
-                return;
-            }
-            
-            if (data.error) {
-                document.getElementById('overall-accuracy').textContent = '--';
-                document.getElementById('panel-content').innerHTML = `
-                    <p class="error">${data.error}</p>
-                `;
-                return;
-            }
-            
-            // Update overall accuracy
-            document.getElementById('overall-accuracy').textContent = data.overall_accuracy + '%';
-            
-            // Build statistics HTML
-            var html = `
-                <div style="margin-bottom: 15px;">
-                    <strong>Viewport Statistics:</strong><br>
-                    <div style="margin-top: 8px; font-size: 12px;">
-                        Parcels: <strong>${data.total_parcels}</strong><br>
-                        Analyzed: <strong>${data.processed_parcels}</strong><br>
-                        Pixels: <strong>${data.total_pixels.toLocaleString()}</strong><br>
-                        Correct: <strong>${data.correct_pixels.toLocaleString()}</strong><br>
-                        Errors: <strong>${(data.total_pixels - data.correct_pixels).toLocaleString()}</strong>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 10px;">
-                    <strong>Per-Class Accuracy:</strong>
-                </div>
-            `;
-
-            html += buildConfusionMatrixTable(data);
-
-            html += `<div style="margin-top: 15px; margin-bottom: 10px;">
-                <strong>Per-Class Summary:</strong>
-            </div>`;
-            
-            // Add per-class metrics
-            for (const [className, metrics] of Object.entries(data.class_metrics)) {
-                var accuracyColor = metrics.producers_accuracy >= 95 ? '#2E7D32' : 
-                                   metrics.producers_accuracy >= 85 ? '#F57C00' : '#D32F2F';
-                
-                html += `
-                    <div style="margin: 8px 0; padding: 8px; background: #F5F5F5; border-radius: 4px; font-size: 11px;">
-                        <div style="font-weight: bold; color: #333;">${className}</div>
-                        <div style="margin-top: 3px;">
-                            Accuracy: <span style="color: ${accuracyColor}; font-weight: bold;">${metrics.producers_accuracy}%</span>
-                            (${metrics.correct_pixels}/${metrics.total_pixels} pixels)
-                        </div>
-                    </div>
-                `;
-            }
-            
-            html += `
-                <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; border-radius: 4px; font-size: 11px;">
-                    <strong style="color: #2E7D32;">💡 Tip:</strong> Click on parcels to see individual classification details.
-                </div>
-            `;
-            
-            document.getElementById('panel-content').innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error calculating stats:', error);
-            document.getElementById('overall-accuracy').textContent = '--';
-            document.getElementById('panel-content').innerHTML = `
-                <p class="error">Error calculating statistics: ${error.message}</p>
-            `;
-        });
-}
-
-// Debounced version - wait 500ms after user stops moving
 var debouncedUpdateStats = debounce(updateViewportStats, 500);
 
-// Attach to map events
 map.on('moveend', debouncedUpdateStats);
 map.on('zoomend', debouncedUpdateStats);
 
-// Layer control - tiles OFF by default
-// Position it on the LEFT to avoid overlap with stats panel
+// Layer control
 var basemaps = {
     "OpenStreetMap": osm,
     "CartoDB Positron": cartodb
@@ -759,18 +707,18 @@ var overlays = {
     "HRL Raster Tiles (2021)": gdalTiles
 };
 
-var layerControl = L.control.layers(basemaps, overlays, {
+L.control.layers(basemaps, overlays, {
     collapsed: false,
-    position: 'topleft'  // Move to top-left corner
+    position: 'topleft'
 }).addTo(map);
 
-// Initial stats update (if zoom is sufficient)
+// Initial stats update
 map.whenReady(function() {
     setTimeout(function() {
-        if (map.getZoom() >= 12) {
+        if (map.getZoom() >= 14) {
             updateViewportStats();
         }
-    }, 3000);  // Wait for parcels to load
+    }, 3000);
 });
 
 </script>
