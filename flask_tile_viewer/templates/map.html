@@ -136,10 +136,6 @@
             fill-opacity: 0.6;
             stroke-width: 3;
         }
-        .leaflet-control-layers {
-            background: white !important;
-            border: 2px solid rgba(0,0,0,0.4) !important;
-        }
     </style>
 </head>
 <body>
@@ -537,16 +533,20 @@ map.on('moveend', debouncedUpdateStats);
 map.on('zoomend', debouncedUpdateStats);
 
 // Layer control - tiles OFF by default
+// Position it on the LEFT to avoid overlap with stats panel
 var basemaps = {
     "OpenStreetMap": osm,
     "CartoDB Positron": cartodb
 };
 
 var overlays = {
-    "HRL Tiles (2021)": gdalTiles
+    "HRL Raster Tiles (2021)": gdalTiles
 };
 
-var layerControl = L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
+var layerControl = L.control.layers(basemaps, overlays, {
+    collapsed: false,
+    position: 'topleft'  // Move to top-left corner
+}).addTo(map);
 
 // Initial stats update (if zoom is sufficient)
 map.whenReady(function() {
