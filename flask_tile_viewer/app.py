@@ -434,5 +434,4 @@ if __name__ == '__main__':
     print("="*60 + "\n")
     
     # Disable reloader to avoid issues
-    # You'll need to manually restart after code changes
     app.run(debug=True, host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
